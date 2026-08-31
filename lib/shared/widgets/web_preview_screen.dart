@@ -59,7 +59,7 @@ class _WebPreviewScreenState extends State<WebPreviewScreen> {
             onWebResourceError: (WebResourceError error) {
               final desc = error.description.toLowerCase();
               final errorType = error.errorType?.toString().toLowerCase() ?? '';
-              // Ignore ERR_CACHE_MISS (-14) or non-fatal cache sub-resource warnings on real Android devices (Redmi/MIUI)
+              // Ignore ERR_CACHE_MISS (-14) or non-fatal cache sub-resource warnings on real Android devices (Oppo/Realme/Vivo/Redmi)
               if (error.errorCode == -14 ||
                   desc.contains('cache') ||
                   desc.contains('err_cache_miss') ||
