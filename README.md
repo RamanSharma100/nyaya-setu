@@ -8,6 +8,7 @@
 [![Riverpod](https://img.shields.io/badge/State-Riverpod_2.x-42A5F5)](https://riverpod.dev)
 [![License](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Sponsor](https://img.shields.io/badge/Sponsor-RamanSharma100-ea4aaa?logo=github-sponsors)](https://github.com/sponsors/RamanSharma100)
 
 *Bridging Old Statutes with New Criminal Codes (BNS 2023, BNSS 2023, BSA 2023) for Judicial Aspirants Across India.*
 
@@ -17,7 +18,7 @@
 
 ## 📌 Overview
 
-**NyayaSetu** is a state-of-the-art mobile application designed specifically for Indian Judicial Services aspirants (DJS, UP PCS-J, MP CJ, RJS, BJS, HCS-J, and All-India Judicial Services). It offers a complete suite of statutory converters, Supreme Court case law summaries, prelims flashcards, timed MCQ quizzes, and Mains answer drafting tools.
+**NyayaSetu (`nyaya-setu`)** is a state-of-the-art mobile application designed specifically for Indian Judicial Services aspirants (DJS, UP PCS-J, MP CJ, RJS, BJS, HCS-J, and All-India Judicial Services). It offers a complete suite of statutory converters, Supreme Court case law summaries, prelims flashcards, timed MCQ quizzes, and Mains answer drafting tools.
 
 ---
 
@@ -82,8 +83,8 @@
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/nyayasetu.git
-   cd nyayasetu
+   git clone https://github.com/RamanSharma100/nyaya-setu.git
+   cd nyaya-setu
    ```
 
 2. **Install dependencies**:
@@ -129,6 +130,17 @@ flutter test
 
 ---
 
+## 💖 Sponsorship & Support
+
+If **NyayaSetu (`nyaya-setu`)** has helped you in your judicial preparation or legal tech project, please consider supporting the project!
+
+- 💖 **Sponsor on GitHub**: [![Sponsor GitHub](https://img.shields.io/badge/Sponsor-RamanSharma100-ea4aaa?logo=github-sponsors)](https://github.com/sponsors/RamanSharma100)
+- ☕ **Buy Me A Coffee**: [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ramansharma100)
+- 🌟 **Star this repository**: [github.com/RamanSharma100/nyaya-setu](https://github.com/RamanSharma100/nyaya-setu)
+- 📢 **Share with Law Students & Aspirants** across Telegram & WhatsApp groups!
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions from legal tech developers, law students, and judicial aspirants!
@@ -140,17 +152,6 @@ We welcome contributions from legal tech developers, law students, and judicial 
 5. **Open a Pull Request**
 
 Please review our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
----
-
-## 💖 Sponsorship & Support
-
-If **NyayaSetu** has helped you in your judicial preparation or legal tech project, please consider supporting the project!
-
-- 🌟 **Star this repository** on GitHub
-- 💖 **Sponsor on GitHub**: [github.com/sponsors/nyayasetu](https://github.com/sponsors)
-- ☕ **Buy Us A Coffee**: [buymeacoffee.com/nyayasetu](https://buymeacoffee.com)
-- 📢 **Share with Law Students & Aspirants** across Telegram & WhatsApp groups!
 
 ---
 

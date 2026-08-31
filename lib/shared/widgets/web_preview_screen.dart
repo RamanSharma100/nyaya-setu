@@ -32,10 +32,13 @@ class _WebPreviewScreenState extends State<WebPreviewScreen> {
   }
 
   void _initWebView() {
-    final cleanUrl = widget.initialUrl.trim().isEmpty ? 'https://news.google.com' : widget.initialUrl.trim();
+    final cleanUrl = widget.initialUrl.trim().isEmpty ? 'https://indiankanoon.org' : widget.initialUrl.trim();
     try {
       final controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setUserAgent(
+          'Mozilla/5.0 (Linux; Android 10; Mobile; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+        )
         ..setBackgroundColor(Colors.white)
         ..setNavigationDelegate(
           NavigationDelegate(
@@ -54,6 +57,15 @@ class _WebPreviewScreenState extends State<WebPreviewScreen> {
               if (mounted) setState(() => _loadingProgress = 100);
             },
             onWebResourceError: (WebResourceError error) {
+              final desc = error.description.toLowerCase();
+              final errorType = error.errorType?.toString().toLowerCase() ?? '';
+              // Ignore ERR_CACHE_MISS (-14) or non-fatal cache sub-resource warnings on real Android devices (Redmi/MIUI)
+              if (error.errorCode == -14 ||
+                  desc.contains('cache') ||
+                  desc.contains('err_cache_miss') ||
+                  errorType.contains('cache')) {
+                return;
+              }
               if (error.isForMainFrame ?? false) {
                 if (mounted) {
                   setState(() {
@@ -76,7 +88,7 @@ class _WebPreviewScreenState extends State<WebPreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cleanUrl = widget.initialUrl.trim().isEmpty ? 'https://news.google.com' : widget.initialUrl.trim();
+    final cleanUrl = widget.initialUrl.trim().isEmpty ? 'https://indiankanoon.org' : widget.initialUrl.trim();
 
     return Scaffold(
       appBar: AppBar(
