@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "NyayaSetu (Emulator)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "emulator-5554",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
+    },
+    {
+      "name": "NyayaSetu (Physical Device)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "android",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
+    }
+  ]
+}
