@@ -153,7 +153,7 @@ class _GeminiAiScreenState extends ConsumerState<GeminiAiScreen> with TickerProv
           children: [
             const Icon(Icons.auto_awesome, color: AppColors.accentGold, size: 20),
             const SizedBox(width: 8),
-            Text('NyayaAI Voice Assistant', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+            Text('NyayaAI Voice Assistant', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
           ],
         ),
         actions: [
@@ -319,14 +319,14 @@ class _GeminiAiScreenState extends ConsumerState<GeminiAiScreen> with TickerProv
                   fontWeight: FontWeight.bold,
                   color: msg.isUser ? AppColors.accentGold : AppColors.primaryNavy,
                 ),
-                h1: GoogleFonts.outfit(
+                h1: GoogleFonts.plusJakartaSans(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                   color: msg.isUser ? Colors.white : AppColors.primaryNavy,
                 ),
-                h2: GoogleFonts.outfit(
+                h2: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                   color: msg.isUser ? Colors.white : AppColors.primaryNavy,
                 ),
                 listBullet: GoogleFonts.inter(
@@ -355,27 +355,36 @@ class _GeminiAiScreenState extends ConsumerState<GeminiAiScreen> with TickerProv
       ),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: _toggleVoiceListening,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: _isVoiceListening ? AppColors.crimsonRed : AppColors.accentGold,
-                shape: BoxShape.circle,
-                boxShadow: _isVoiceListening
-                    ? [BoxShadow(color: AppColors.crimsonRed.withValues(alpha: 0.5), blurRadius: 12, spreadRadius: 4)]
-                    : [],
+          Semantics(
+            button: true,
+            label: _isVoiceListening ? 'Stop listening' : 'Start voice input',
+            child: Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: _toggleVoiceListening,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: _isVoiceListening ? AppColors.crimsonRed : AppColors.accentGold,
+                    shape: BoxShape.circle,
+                    boxShadow: _isVoiceListening
+                        ? [BoxShadow(color: AppColors.crimsonRed.withValues(alpha: 0.5), blurRadius: 12, spreadRadius: 4)]
+                        : [],
+                  ),
+                  child: Icon(
+                    _isVoiceListening ? Icons.mic : Icons.mic_none,
+                    color: _isVoiceListening ? Colors.white : AppColors.primaryNavy,
+                    size: 24,
+                  ),
+                ).animate(target: _isVoiceListening ? 1.0 : 0.0).scale(
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.15, 1.15),
+                      duration: 600.ms,
+                    ),
               ),
-              child: Icon(
-                _isVoiceListening ? Icons.mic : Icons.mic_none,
-                color: _isVoiceListening ? Colors.white : AppColors.primaryNavy,
-                size: 24,
-              ),
-            ).animate(target: _isVoiceListening ? 1.0 : 0.0).scale(
-                  begin: const Offset(1, 1),
-                  end: const Offset(1.15, 1.15),
-                  duration: 600.ms,
-                ),
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -392,7 +401,8 @@ class _GeminiAiScreenState extends ConsumerState<GeminiAiScreen> with TickerProv
           ),
           const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.send, color: AppColors.primaryNavy),
+            tooltip: 'Send message',
+            icon: const Icon(Icons.send_rounded, color: AppColors.primaryNavy),
             onPressed: () => _sendMessage(_textController.text),
           ),
         ],

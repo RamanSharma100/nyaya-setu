@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/parser.dart' as html_parser;
 import '../../shared/models/bare_act.dart';
 import '../../shared/models/law_comparison.dart';
 import '../../shared/models/state_syllabus.dart';
@@ -15,29 +14,24 @@ class IndiaCodeApiClient {
             Dio(
               BaseOptions(
                 baseUrl: 'https://www.indiacode.nic.in',
-                connectTimeout: const Duration(seconds: 8),
-                receiveTimeout: const Duration(seconds: 8),
+                connectTimeout: const Duration(seconds: 4),
+                receiveTimeout: const Duration(seconds: 4),
                 headers: {
                   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 },
               ),
             );
 
-  Future<List<BareAct>> fetchBareActs() async {
-    try {
-      final response = await _dio.get('/');
-      if (response.statusCode == 200 && response.data != null) {
-        final document = html_parser.parse(response.data.toString());
-        final titleElement = document.querySelector('title');
-        if (titleElement != null && titleElement.text.contains('India Code')) {
-        }
-      }
-    } catch (_) {}
+  static List<BareAct>? _cachedBareActs;
+  static List<StateSyllabus>? _cachedSyllabi;
+  static List<LawComparison>? _cachedComparisons;
 
-    return _getFallbackBareActs();
+  Future<List<BareAct>> fetchBareActs() async {
+    return _cachedBareActs ??= _getFallbackBareActs();
   }
 
   Future<List<LawComparison>> fetchLawComparisons() async {
+    if (_cachedComparisons != null) return _cachedComparisons!;
     try {
       final response = await _dio.get(
         'https://datasets-server.huggingface.co/rows?dataset=opennyaiorg/aibe_dataset&config=default&split=train&offset=0&limit=50',
@@ -79,17 +73,17 @@ class IndiaCodeApiClient {
           }
           if (liveList.isNotEmpty) {
             final fallbackItems = _getFallbackComparisons();
-            return [...fallbackItems, ...liveList];
+            return _cachedComparisons = [...fallbackItems, ...liveList];
           }
         }
       }
     } catch (_) {}
 
-    return _getFallbackComparisons();
+    return _cachedComparisons = _getFallbackComparisons();
   }
 
   Future<List<StateSyllabus>> fetchStatesSyllabus() async {
-    return _getFallbackSyllabi();
+    return _cachedSyllabi ??= _getFallbackSyllabi();
   }
 
   List<BareAct> _getFallbackBareActs() {
@@ -892,7 +886,7 @@ class IndiaCodeApiClient {
       ),
       StateSyllabus(
         id: 'universal',
-        stateName: 'All-India Universal Judicial Syllabus',
+        stateName: 'All-India Universal Prep',
         code: 'ALL-INDIA',
         examPattern: ExamPattern(
           prelimsMarks: 200,

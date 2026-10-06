@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_typography.dart';
 import '../../core/storage/hive_service.dart';
+import '../../core/utils/youtube_helper.dart';
 import '../../shared/models/bare_act.dart';
+import '../../shared/widgets/youtube_video_card.dart';
 
 class SectionDetailScreen extends StatefulWidget {
   final BareAct bareAct;
@@ -42,6 +45,7 @@ class _SectionDetailScreenState extends State<SectionDetailScreen> {
   Widget build(BuildContext context) {
     final sec = widget.section;
     final act = widget.bareAct;
+    final video = YouTubeHelper.getMatchingVideo('${act.shortTitle} ${sec.sectionNumber} ${sec.title}');
 
     return Scaffold(
       appBar: AppBar(
@@ -118,7 +122,7 @@ class _SectionDetailScreenState extends State<SectionDetailScreen> {
                   const SizedBox(height: 10),
                   Text(
                     sec.title,
-                    style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: AppTypography.fontHeading(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3),
                   ),
                   const SizedBox(height: 14),
                   Wrap(
@@ -147,12 +151,23 @@ class _SectionDetailScreenState extends State<SectionDetailScreen> {
               ),
             ),
             const SizedBox(height: 20),
+            // YouTube Video Breakdown Card
+            _buildSectionCard(
+              title: 'Video Lecture & Analysis',
+              icon: Icons.ondemand_video,
+              content: YouTubeVideoCard(
+                video: video,
+                searchQuery: '${act.shortTitle} Section ${sec.sectionNumber} ${sec.title}',
+                compactLabel: 'SECTION BREAKDOWN',
+              ),
+            ),
+            const SizedBox(height: 16),
             _buildSectionCard(
               title: 'Full Statutory Text',
               icon: Icons.gavel,
               content: SelectableText(
                 sec.content,
-                style: GoogleFonts.inter(fontSize: 15, height: 1.6),
+                style: AppTypography.fontStatute(fontSize: 15, height: 1.65, color: const Color(0xFF1F2937)),
               ),
             ),
             const SizedBox(height: 16),
@@ -344,7 +359,7 @@ class _SectionDetailScreenState extends State<SectionDetailScreen> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryNavy),
+                style: AppTypography.fontHeading(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.primaryNavy),
               ),
             ],
           ),

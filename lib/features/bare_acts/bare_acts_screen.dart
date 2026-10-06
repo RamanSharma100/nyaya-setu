@@ -56,27 +56,46 @@ class _BareActsScreenState extends ConsumerState<BareActsScreen> with SingleTick
         title: const Text('Bare Acts & Law Converter'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.manage_search),
-            tooltip: 'Exam Concept Search',
+            icon: const Icon(Icons.manage_search_rounded),
+            tooltip: 'Concept Search',
             onPressed: () => context.push('/concept_search'),
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
               ref.invalidate(bareActsProvider);
               ref.invalidate(comparisonsProvider);
             },
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: AppColors.accentGold,
-          labelColor: AppColors.accentGold,
-          unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(icon: Icon(Icons.menu_book), text: 'Bare Act Explorer'),
-            Tab(icon: Icon(Icons.compare_arrows), text: 'IPC ➔ BNS Converter'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: AppColors.accentGold,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: AppColors.primaryNavy,
+              unselectedLabelColor: Colors.white70,
+              labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              unselectedLabelStyle: const TextStyle(fontSize: 12),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(text: '📚  Bare Acts'),
+                Tab(text: '🔄  IPC ➔ BNS'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(

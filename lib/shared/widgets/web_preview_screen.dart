@@ -87,6 +87,12 @@ class _WebPreviewScreenState extends State<WebPreviewScreen> {
   }
 
   @override
+  void dispose() {
+    _controller?.loadRequest(Uri.parse('about:blank'));
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final cleanUrl = widget.initialUrl.trim().isEmpty ? 'https://indiankanoon.org' : widget.initialUrl.trim();
 
@@ -99,7 +105,7 @@ class _WebPreviewScreenState extends State<WebPreviewScreen> {
               widget.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold),
+              style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             Text(
               cleanUrl,
@@ -154,7 +160,7 @@ class _WebPreviewScreenState extends State<WebPreviewScreen> {
                           const SizedBox(height: 16),
                           Text(
                             'Unable to load web preview',
-                            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryNavy),
+                            style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.primaryNavy),
                           ),
                           const SizedBox(height: 8),
                           Text(

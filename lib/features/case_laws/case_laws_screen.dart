@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_typography.dart';
 import '../../core/network/indian_kanoon_client.dart';
 import '../../core/network/legal_news_rss_client.dart';
+import '../../core/utils/youtube_helper.dart';
 import '../../shared/models/case_law.dart';
 import '../../shared/widgets/search_bar.dart';
 import '../../shared/widgets/web_preview_screen.dart';
+import '../../shared/widgets/youtube_video_card.dart';
 
 final indianKanoonClientProvider = Provider((ref) => IndianKanoonApiClient());
 final legalNewsRssClientProvider = Provider((ref) => LegalNewsRssClient());
@@ -52,7 +55,7 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Landmark Judgments & Live RSS'),
+        title: const Text('Landmark Judgments & Video Digests'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -62,15 +65,40 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
             },
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: AppColors.accentGold,
-          labelColor: AppColors.accentGold,
-          unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(icon: Icon(Icons.gavel), text: 'Indian Kanoon SC Cases'),
-            Tab(icon: Icon(Icons.newspaper), text: 'Live RSS Legal Feed'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: AppColors.accentGold,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: AppColors.primaryNavy,
+              unselectedLabelColor: Colors.white70,
+              labelStyle: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(text: '⚖️  Landmark SC Cases'),
+                Tab(text: '📰  Live Legal Feed'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -154,8 +182,12 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
                   itemCount: filteredCases.length,
                   itemBuilder: (context, index) {
                     final item = filteredCases[index];
+                    final video = YouTubeHelper.getMatchingVideo('${item.title} ${item.citation}');
+
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: ExpansionTile(
                         leading: const CircleAvatar(
                           backgroundColor: AppColors.primaryNavy,
@@ -163,7 +195,7 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
                         ),
                         title: Text(
                           item.title,
-                          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: AppTypography.fontHeading(fontWeight: FontWeight.w700, fontSize: 16),
                         ),
                         subtitle: Text('${item.citation} (${item.year}) • ${item.subject}', style: GoogleFonts.inter(fontSize: 12)),
                         children: [
@@ -182,9 +214,20 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
                                   ],
                                 ),
                                 const Divider(),
+
+                                // YouTube Video Digest for Case Law
+                                Text('Case Video Breakdown:', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.primaryNavy)),
+                                const SizedBox(height: 6),
+                                YouTubeVideoCard(
+                                  video: video,
+                                  searchQuery: '${item.title} ${item.citation}',
+                                  compactLabel: 'CASE DIGEST VIDEO',
+                                ),
+                                const SizedBox(height: 12),
+
                                 Text('Ratio Decidendi:', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.primaryNavy)),
                                 const SizedBox(height: 4),
-                                Text(item.ratioDecidendi, style: GoogleFonts.inter(fontSize: 14, height: 1.5)),
+                                Text(item.ratioDecidendi, style: AppTypography.fontStatute(fontSize: 14, height: 1.6, color: const Color(0xFF1E293B))),
                                 const SizedBox(height: 12),
                                 Text('Holding & Facts:', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.primaryNavy)),
                                 const SizedBox(height: 4),
@@ -289,7 +332,7 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(item.title, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, height: 1.3)),
+                    Text(item.title, style: AppTypography.fontHeading(fontSize: 15, fontWeight: FontWeight.w700, height: 1.3)),
                     const SizedBox(height: 6),
                     Text(item.description, maxLines: 3, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMutedDark)),
                     const SizedBox(height: 8),
@@ -352,7 +395,7 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(news.title, style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryNavy)),
+                  Text(news.title, style: AppTypography.fontHeading(fontSize: 19, fontWeight: FontWeight.w700, color: AppColors.primaryNavy)),
                   const SizedBox(height: 4),
                   Text('Published: ${news.pubDate}', style: GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade600)),
                   const Divider(height: 24),
@@ -370,7 +413,7 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
                           children: [
                             const Icon(Icons.school, color: AppColors.primaryNavy, size: 18),
                             const SizedBox(width: 6),
-                            Text('PCS-J Judicial Relevance', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppColors.primaryNavy)),
+                            Text('PCS-J Judicial Relevance', style: AppTypography.fontHeading(fontWeight: FontWeight.w700, color: AppColors.primaryNavy)),
                           ],
                         ),
                         const SizedBox(height: 4),

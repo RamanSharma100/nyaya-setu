@@ -11,15 +11,15 @@ class HiveService {
   static Future<void> initHive() async {
     try {
       await Hive.initFlutter();
+      await Future.wait([
+        _openBoxSafe(settingsBoxName),
+        _openBoxSafe(bookmarksBoxName),
+        _openBoxSafe(notesBoxName),
+        _openBoxSafe(flashcardProgressBoxName),
+        _openBoxSafe(mainsDraftsBoxName),
+        _openBoxSafe('user_auth_box'),
+      ]).timeout(const Duration(seconds: 3));
     } catch (_) {}
-    await Future.wait([
-      _openBoxSafe(settingsBoxName),
-      _openBoxSafe(bookmarksBoxName),
-      _openBoxSafe(notesBoxName),
-      _openBoxSafe(flashcardProgressBoxName),
-      _openBoxSafe(mainsDraftsBoxName),
-      _openBoxSafe('user_auth_box'),
-    ]);
   }
 
   static Future<void> _openBoxSafe(String boxName) async {

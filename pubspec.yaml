@@ -1,5 +1,5 @@
 name: nyayasetu
-description: "A new Flutter project."
+description: "NyayaSetu - Judicial Services (PCS-J) Preparation Platform with 2023 Criminal Code Converters, Landmark SC Precedents & Mains Writing Studio."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -45,6 +45,7 @@ dependencies:
   flutter_markdown: ^0.7.1
   url_launcher: ^6.3.0
   webview_flutter: ^4.7.0
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:

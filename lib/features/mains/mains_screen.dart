@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/storage/hive_service.dart';
+import '../../core/utils/youtube_helper.dart';
+import '../../shared/widgets/youtube_video_card.dart';
 
 class MainsQuestion {
   final String id;
@@ -306,22 +308,37 @@ class _MainsScreenState extends ConsumerState<MainsScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: _toggleTimer,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(_isTimerRunning ? Icons.pause_circle : Icons.play_circle, color: AppColors.accentGoldLight),
-                            const SizedBox(width: 4),
-                            Text(
-                              _formatTimer(_timerSeconds),
-                              style: GoogleFonts.firaCode(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                      Semantics(
+                        button: true,
+                        label: _isTimerRunning ? 'Pause exam timer' : 'Start exam timer',
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: _toggleTimer,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    _isTimerRunning ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                                    color: AppColors.accentGoldLight,
+                                    size: 22,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    _formatTimer(_timerSeconds),
+                                    style: GoogleFonts.firaCode(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
@@ -388,8 +405,14 @@ class _MainsScreenState extends ConsumerState<MainsScreen> {
             ),
             const SizedBox(height: 20),
             if (_showModelAnswer) ...[
-              Text('Model Answer & Evaluation Rubric', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 10),
+              Text('Model Answer & Video Breakdown', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              YouTubeVideoCard(
+                video: YouTubeHelper.getMatchingVideo(currentQ.subject),
+                searchQuery: '${currentQ.subject} Mains Answer Writing Judiciary',
+                compactLabel: 'MAINS VIDEO LECTURE',
+              ),
+              const SizedBox(height: 12),
               _buildRubricSection('1. Facts & Premise', currentQ.modelAnswerFacts, Colors.blue.shade50),
               _buildRubricSection('2. Frame of Issues', currentQ.modelAnswerIssues, Colors.purple.shade50),
               _buildRubricSection('3. Applicable Sections', currentQ.modelAnswerSections, Colors.amber.shade50),
@@ -421,7 +444,7 @@ class _MainsScreenState extends ConsumerState<MainsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppColors.primaryNavy, fontSize: 14)),
+          Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppColors.primaryNavy, fontSize: 14)),
           const SizedBox(height: 4),
           Text(content, style: GoogleFonts.inter(fontSize: 13, height: 1.4)),
         ],

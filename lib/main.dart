@@ -1,19 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/app_themes.dart';
 import 'core/router/app_router.dart';
 import 'core/storage/hive_service.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await HiveService.initHive();
 
   runApp(
     const ProviderScope(
       child: NyayaSetuApp(),
     ),
   );
+
+  _initBackgroundServices();
+}
+
+void _initBackgroundServices() async {
+  try {
+    await HiveService.initHive();
+  } catch (e) {
+    debugPrint('Hive init error: $e');
+  }
+
+  try {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
+  } catch (_) {}
 }
 
 class NoStretchScrollBehavior extends ScrollBehavior {

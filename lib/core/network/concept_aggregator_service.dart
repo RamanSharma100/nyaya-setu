@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/models/bare_act.dart';
+import '../../shared/models/case_law.dart';
+import '../../shared/models/law_comparison.dart';
 import '../../shared/models/mcq.dart';
 import '../utils/sanitizer.dart';
 import 'huggingface_mcq_client.dart';
@@ -50,10 +52,17 @@ class ConceptAggregatorService {
     final indiaCodeClient = _ref.read(indiaCodeClientProvider);
     final hfClient = _ref.read(huggingFaceClientProvider);
 
-    final judgments = await kanoonClient.searchJudgments(query);
-    final bareActs = await indiaCodeClient.fetchBareActs();
-    final comparisons = await indiaCodeClient.fetchLawComparisons();
-    final mcqs = await hfClient.fetchLegalMCQs();
+    final results = await Future.wait([
+      kanoonClient.searchJudgments(query),
+      indiaCodeClient.fetchBareActs(),
+      indiaCodeClient.fetchLawComparisons(),
+      hfClient.fetchLegalMCQs(),
+    ]);
+
+    final judgments = results[0] as List<CaseLaw>;
+    final bareActs = results[1] as List<BareAct>;
+    final comparisons = results[2] as List<LawComparison>;
+    final mcqs = results[3] as List<MCQ>;
 
     final aggregatedItems = <DynamicConceptItem>[];
     final qLower = query.trim().toLowerCase();

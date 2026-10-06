@@ -1,15 +1,22 @@
 import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_typography.dart';
 import '../../core/network/huggingface_mcq_client.dart';
 import '../../core/storage/hive_service.dart';
 import '../../shared/models/mcq.dart';
 import '../../shared/widgets/flashcard_swipe_widget.dart';
 
-final huggingFaceClientProvider = Provider((ref) => HuggingFaceLegalMCQClient());
+final huggingFaceClientProvider = Provider(
+  (ref) => HuggingFaceLegalMCQClient(),
+);
 
 final mcqListProvider = FutureProvider<List<MCQ>>((ref) async {
   final client = ref.read(huggingFaceClientProvider);
@@ -23,7 +30,8 @@ class PrelimsScreen extends ConsumerStatefulWidget {
   ConsumerState<PrelimsScreen> createState() => _PrelimsScreenState();
 }
 
-class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTickerProviderStateMixin {
+class _PrelimsScreenState extends ConsumerState<PrelimsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedOptionIndex = -1;
   bool _submittedAnswer = false;
@@ -98,9 +106,7 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
   void _submitAnswer() {
     if (_submittedAnswer) return;
     _quizTimer?.cancel();
-    setState(() {
-      _submittedAnswer = true;
-    });
+    setState(() => _submittedAnswer = true);
   }
 
   @override
@@ -115,17 +121,22 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
     final mcqAsync = ref.watch(mcqListProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        title: const Text('Prelims Deck & Timed Quiz'),
+        title: const Text('Practice & Mock Test'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+          onPressed: () => Navigator.maybePop(context),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.manage_search),
-            tooltip: 'Exam Concept Search',
+            icon: const Icon(Icons.manage_search_rounded),
+            tooltip: 'Concept Search',
             onPressed: () => context.push('/concept_search'),
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Shuffle Questions & Restart',
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Restart Quiz',
             onPressed: () {
               ref.invalidate(mcqListProvider);
               setState(() {
@@ -138,35 +149,67 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
             },
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: AppColors.accentGold,
-          labelColor: AppColors.accentGold,
-          unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(icon: Icon(Icons.style), text: 'Spaced Flashcards'),
-            Tab(icon: Icon(Icons.timer), text: 'High-Yield MCQ Quiz'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: AppColors.accentGold,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: AppColors.primaryNavy,
+              unselectedLabelColor: Colors.white70,
+              labelStyle: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(text: '📚  Flashcards'),
+                Tab(text: '⏱️  MCQ Quiz'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 90.0),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  FlashcardSwipeWidget(
-                    flashcards: _sampleCards,
-                    onSwipe: (card, mastered) {
-                      HiveService.updateFlashcardStatus(card.id, mastered ? 'mastered' : 'review');
-                    },
-                  ),
-                ],
-              ),
+          // Flashcard tab
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildFlashcardHeader(),
+                const SizedBox(height: 16),
+                FlashcardSwipeWidget(
+                  flashcards: _sampleCards,
+                  onSwipe: (card, mastered) {
+                    HiveService.updateFlashcardStatus(
+                      card.id,
+                      mastered ? 'mastered' : 'review',
+                    );
+                  },
+                ),
+              ],
             ),
           ),
+
+          // MCQ Quiz tab
           mcqAsync.when(
             data: (mcqs) => RefreshIndicator(
               onRefresh: () async {
@@ -181,20 +224,69 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
               },
               child: _buildTimedMCQQuiz(mcqs),
             ),
-            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.accentGold)),
-            error: (err, stack) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.wifi_off, size: 48, color: Colors.grey),
-                  const SizedBox(height: 12),
-                  Text('Failed to load MCQs: $err'),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () => ref.refresh(mcqListProvider),
-                    child: const Text('Retry Fetching OpenNYAI MCQs'),
+            loading: () => _buildLoadingState(),
+            error: (err, stack) => _buildErrorState(err),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFlashcardHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.primaryNavy, Color(0xFF1A3A5C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: AppColors.accentGold.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.style_rounded, color: AppColors.accentGold, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Spaced Repetition Flashcards',
+                  style: AppTypography.fontHeading(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
                   ),
-                ],
+                ),
+                Text(
+                  'Swipe right to master • Left to review later',
+                  style: GoogleFonts.inter(color: Colors.white60, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.emeraldGreen.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.emeraldGreen.withValues(alpha: 0.4)),
+            ),
+            child: Text(
+              '${_sampleCards.length} cards',
+              style: GoogleFonts.inter(
+                color: AppColors.emeraldGreen,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -203,81 +295,123 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
     );
   }
 
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.primaryNavy, Color(0xFF1A3A5C)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.accentGold,
+                strokeWidth: 2.5,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Fetching live MCQs...',
+            style: GoogleFonts.inter(color: AppColors.textMutedDark, fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object err) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.crimsonRed.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.wifi_off_rounded, size: 40, color: AppColors.crimsonRed),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Connection Error',
+              style: AppTypography.fontHeading(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Could not fetch live MCQ dataset.\nCheck your connection and retry.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: AppColors.textMutedDark, fontSize: 13),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () => ref.refresh(mcqListProvider),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryNavy,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTimedMCQQuiz(List<MCQ> mcqs) {
     if (mcqs.isEmpty) {
-      return const Center(child: Text('No MCQs returned from live dataset endpoint.'));
+      return Center(
+        child: Text(
+          'No MCQs available from the live dataset.',
+          style: GoogleFonts.inter(color: AppColors.textMutedDark),
+        ),
+      );
     }
 
     final filteredMcqs = _selectedSubjectFilter == 'All'
         ? mcqs
         : mcqs.where((m) => m.subject == _selectedSubjectFilter).toList();
-
     final activeList = filteredMcqs.isEmpty ? mcqs : filteredMcqs;
 
     if (_mcqIndex >= activeList.length) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.emoji_events, color: AppColors.accentGold, size: 72),
-              const SizedBox(height: 16),
-              const Text('Quiz Completed!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(
-                'Your Score: $_score / ${activeList.length}',
-                style: const TextStyle(fontSize: 20, color: AppColors.emeraldGreen, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: () {
-                  ref.invalidate(mcqListProvider);
-                  setState(() {
-                    _mcqIndex = 0;
-                    _score = 0;
-                    _submittedAnswer = false;
-                    _selectedOptionIndex = -1;
-                  });
-                  _startTimer();
-                },
-                icon: const Icon(Icons.shuffle),
-                label: const Text('Shuffle & Retake Quiz'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryNavy,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return _buildQuizCompleted(activeList.length);
     }
 
     final currentMCQ = activeList[_mcqIndex];
     final filterOptions = ['All', 'Criminal Law', 'Procedure', 'Evidence', 'Civil Law', 'Constitutional Law'];
+    final timerProgress = _quizTimeRemaining / 60.0;
+    final isTimeLow = _quizTimeRemaining <= 15;
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0, bottom: 90.0),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 90),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+          SizedBox(
+            height: 44,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
               children: filterOptions.map((filter) {
                 final isSelected = _selectedSubjectFilter == filter;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 6.0),
-                  child: ChoiceChip(
-                    label: Text(filter, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : AppColors.primaryNavy)),
-                    selected: isSelected,
-                    selectedColor: AppColors.primaryNavy,
-                    backgroundColor: Colors.grey.shade200,
-                    onSelected: (selected) {
-                      if (selected) {
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(22),
+                      onTap: () {
                         setState(() {
                           _selectedSubjectFilter = filter;
                           _mcqIndex = 0;
@@ -286,183 +420,266 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
                           _selectedOptionIndex = -1;
                         });
                         _startTimer();
-                      }
-                    },
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppColors.primaryNavy : Colors.white,
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(
+                            color: isSelected ? AppColors.primaryNavy : Colors.grey.shade300,
+                            width: 1.2,
+                          ),
+                          boxShadow: isSelected
+                              ? [BoxShadow(color: AppColors.primaryNavy.withValues(alpha: 0.2), blurRadius: 8)]
+                              : null,
+                        ),
+                        child: Center(
+                          child: Text(
+                            filter,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                              color: isSelected ? Colors.white : AppColors.textMutedDark,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 );
               }).toList(),
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(color: AppColors.primaryNavy, borderRadius: BorderRadius.circular(12)),
-                  child: Text(
-                    '${currentMCQ.stateExam} (${currentMCQ.subject})',
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.timer, color: AppColors.crimsonRed, size: 18),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$_quizTimeRemaining s',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.crimsonRed,
-                      fontFamily: 'Monospace',
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8)],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Question ${_mcqIndex + 1} of ${activeList.length}',
-                  style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  currentMCQ.question,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 1.4),
-                ),
-              ],
-            ),
-          ),
+
           const SizedBox(height: 16),
-          ...List.generate(currentMCQ.options.length, (index) {
-            final optionText = currentMCQ.options[index];
-            final isSelected = _selectedOptionIndex == index;
-            final isCorrect = currentMCQ.correctIndex == index;
 
-            Color optionBg = Theme.of(context).cardColor;
-            Color borderColor = Colors.grey.shade300;
-
-            if (_submittedAnswer) {
-              if (isCorrect) {
-                optionBg = AppColors.diffAddedBg;
-                borderColor = Colors.green;
-              } else if (isSelected) {
-                optionBg = AppColors.diffRemovedBg;
-                borderColor = Colors.red;
-              }
-            } else if (isSelected) {
-              borderColor = AppColors.primaryNavy;
-            }
-
-            return GestureDetector(
-              onTap: _submittedAnswer
-                  ? null
-                  : () {
-                      setState(() {
-                        _selectedOptionIndex = index;
-                      });
-                    },
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: optionBg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
-                ),
-                child: Row(
+          // Progress & Timer header
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: isSelected ? AppColors.primaryNavy : Colors.grey.shade200,
-                      child: Text(
-                        String.fromCharCode(65 + index),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isSelected ? Colors.white : AppColors.textPrimaryDark,
-                          fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        Text(
+                          'Q ${_mcqIndex + 1}',
+                          style: AppTypography.fontHeading(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryNavy,
+                          ),
                         ),
-                      ),
+                        Text(
+                          ' of ${activeList.length}',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: AppColors.textMutedDark,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.emeraldGreen.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '✓ $_score Correct',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: AppColors.emeraldGreen,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        optionText,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(3),
+                      child: LinearProgressIndicator(
+                        value: (_mcqIndex + 1) / activeList.length,
+                        backgroundColor: Colors.grey.shade200,
+                        valueColor: const AlwaysStoppedAnimation(AppColors.primaryNavy),
+                        minHeight: 4,
                       ),
                     ),
                   ],
                 ),
               ),
-            );
+              const SizedBox(width: 16),
+
+              // Timer circle
+              SizedBox(
+                width: 52,
+                height: 52,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CustomPaint(
+                      size: const Size(52, 52),
+                      painter: _TimerPainter(
+                        progress: timerProgress,
+                        color: isTimeLow ? AppColors.crimsonRed : AppColors.emeraldGreen,
+                      ),
+                    ),
+                    Text(
+                      '$_quizTimeRemaining',
+                      style: AppTypography.fontHeading(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: isTimeLow ? AppColors.crimsonRed : AppColors.primaryNavy,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          // Subject badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppColors.sapphireBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.sapphireBlue.withValues(alpha: 0.3)),
+            ),
+            child: Text(
+              '${currentMCQ.stateExam} • ${currentMCQ.subject}',
+              style: GoogleFonts.inter(
+                color: AppColors.sapphireBlue,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // Question card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Text(
+              currentMCQ.question,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                height: 1.5,
+                color: AppColors.textPrimaryDark,
+              ),
+            ),
+          ).animate(key: ValueKey(_mcqIndex)).fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+
+          const SizedBox(height: 14),
+
+          // Options
+          ...List.generate(currentMCQ.options.length, (index) {
+            return _buildOptionTile(currentMCQ, index);
           }),
-          const SizedBox(height: 16),
-          if (!_submittedAnswer) ...[
+
+          const SizedBox(height: 20),
+
+          // Submit / Next button
+          if (!_submittedAnswer)
             SizedBox(
               width: double.infinity,
+              height: 52,
               child: ElevatedButton(
                 onPressed: _selectedOptionIndex != -1 ? _submitAnswer : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryNavy,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  disabledBackgroundColor: Colors.grey.shade200,
+                  disabledForegroundColor: Colors.grey.shade400,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-                child: const Text('Submit Answer'),
+                child: Text(
+                  _selectedOptionIndex != -1 ? 'Submit Answer' : 'Select an Option',
+                  style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-          ] else ...[
+            )
+          else ...[
+            // Explanation card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue.shade200),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.sapphireBlue.withValues(alpha: 0.08),
+                    AppColors.sapphireBlue.withValues(alpha: 0.03),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.sapphireBlue.withValues(alpha: 0.25)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.info_outline, color: AppColors.primaryNavy),
-                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.sapphireBlue.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.info_outline_rounded, color: AppColors.sapphireBlue, size: 16),
+                      ),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Statutory Explanation (${currentMCQ.sectionRef})',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryNavy),
+                          'Explanation • ${currentMCQ.sectionRef}',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.sapphireBlue,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(currentMCQ.explanation, style: const TextStyle(fontSize: 13, height: 1.4)),
+                  const SizedBox(height: 10),
+                  Text(
+                    currentMCQ.explanation,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      height: 1.5,
+                      color: AppColors.textSecondaryDark,
+                    ),
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
+            ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+
+            const SizedBox(height: 14),
+
             SizedBox(
               width: double.infinity,
+              height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  if (_selectedOptionIndex == currentMCQ.correctIndex) {
-                    _score++;
-                  }
+                  if (_selectedOptionIndex == currentMCQ.correctIndex) _score++;
                   setState(() {
                     _mcqIndex++;
                     _submittedAnswer = false;
@@ -473,10 +690,21 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.emeraldGreen,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-                child: const Text('Next Question ➔'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Next Question',
+                      style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(Icons.arrow_forward_rounded, size: 18),
+                  ],
+                ),
               ),
             ),
           ],
@@ -484,4 +712,274 @@ class _PrelimsScreenState extends ConsumerState<PrelimsScreen> with SingleTicker
       ),
     );
   }
+
+  Widget _buildOptionTile(MCQ currentMCQ, int index) {
+    final optionText = currentMCQ.options[index];
+    final isSelected = _selectedOptionIndex == index;
+    final isCorrect = currentMCQ.correctIndex == index;
+
+    Color bgColor = Colors.white;
+    Color borderColor = Colors.grey.shade200;
+    Color textColor = AppColors.textPrimaryDark;
+    Color indexBg = Colors.grey.shade100;
+    Color indexText = AppColors.textMutedDark;
+    IconData? trailingIcon;
+
+    if (_submittedAnswer) {
+      if (isCorrect) {
+        bgColor = AppColors.emeraldGreen.withValues(alpha: 0.08);
+        borderColor = AppColors.emeraldGreen;
+        textColor = AppColors.emeraldGreen;
+        indexBg = AppColors.emeraldGreen;
+        indexText = Colors.white;
+        trailingIcon = Icons.check_circle_rounded;
+      } else if (isSelected) {
+        bgColor = AppColors.crimsonRed.withValues(alpha: 0.06);
+        borderColor = AppColors.crimsonRed;
+        textColor = AppColors.crimsonRed;
+        indexBg = AppColors.crimsonRed;
+        indexText = Colors.white;
+        trailingIcon = Icons.cancel_rounded;
+      }
+    } else if (isSelected) {
+      bgColor = AppColors.primaryNavy.withValues(alpha: 0.05);
+      borderColor = AppColors.primaryNavy;
+      textColor = AppColors.primaryNavy;
+      indexBg = AppColors.primaryNavy;
+      indexText = Colors.white;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: GestureDetector(
+        onTap: _submittedAnswer ? null : () => setState(() => _selectedOptionIndex = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: borderColor,
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: isSelected && !_submittedAnswer
+                ? [BoxShadow(color: AppColors.primaryNavy.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 2))]
+                : null,
+          ),
+          child: Row(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: indexBg,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    String.fromCharCode(65 + index),
+                    style: AppTypography.fontHeading(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: indexText,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  optionText,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: textColor,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              if (trailingIcon != null)
+                Icon(
+                  trailingIcon,
+                  color: isCorrect ? AppColors.emeraldGreen : AppColors.crimsonRed,
+                  size: 20,
+                ),
+            ],
+          ),
+        ),
+      ),
+    ).animate(delay: Duration(milliseconds: 60 * index)).fadeIn(duration: 250.ms).slideX(begin: 0.05, end: 0);
+  }
+
+  Widget _buildQuizCompleted(int total) {
+    final percentage = total > 0 ? (_score / total * 100).round() : 0;
+    final isExcellent = percentage >= 80;
+    final isGood = percentage >= 60;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Trophy animation
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                gradient: isExcellent
+                    ? const LinearGradient(colors: [Color(0xFFD4AF37), Color(0xFFF5E27A)])
+                    : isGood
+                        ? const LinearGradient(colors: [AppColors.emeraldGreen, AppColors.emeraldLight])
+                        : const LinearGradient(colors: [AppColors.sapphireBlue, Color(0xFF60A5FA)]),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: (isExcellent ? AppColors.accentGold : AppColors.emeraldGreen).withValues(alpha: 0.4),
+                    blurRadius: 30,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.emoji_events_rounded, color: Colors.white, size: 48),
+            ).animate().scale(begin: const Offset(0.5, 0.5), end: const Offset(1, 1), curve: Curves.elasticOut, duration: 800.ms),
+
+            const SizedBox(height: 24),
+
+            Text(
+              isExcellent ? '🎉 Outstanding!' : isGood ? '👍 Well Done!' : '📖 Keep Practicing!',
+              style: AppTypography.fontHeading(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimaryDark,
+              ),
+            ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.3, end: 0),
+
+            const SizedBox(height: 12),
+
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 16,
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '$_score',
+                        style: AppTypography.fontHeading(
+                          fontSize: 52,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primaryNavy,
+                          height: 1,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8, left: 4),
+                        child: Text(
+                          '/ $total',
+                          style: GoogleFonts.inter(
+                            fontSize: 20,
+                            color: AppColors.textMutedDark,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '$percentage% Accuracy',
+                    style: GoogleFonts.inter(
+                      color: isExcellent
+                          ? AppColors.accentGold
+                          : isGood
+                              ? AppColors.emeraldGreen
+                              : AppColors.sapphireBlue,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ).animate(delay: 400.ms).fadeIn().scale(),
+
+            const SizedBox(height: 24),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                ref.invalidate(mcqListProvider);
+                setState(() {
+                  _mcqIndex = 0;
+                  _score = 0;
+                  _submittedAnswer = false;
+                  _selectedOptionIndex = -1;
+                });
+                _startTimer();
+              },
+              icon: const Icon(Icons.shuffle_rounded),
+              label: const Text('Try Again with New Questions'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryNavy,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ).animate(delay: 600.ms).fadeIn().slideY(begin: 0.2, end: 0),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TimerPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+
+  _TimerPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) / 2 - 3;
+
+    // Background circle
+    final bgPaint = Paint()
+      ..color = color.withValues(alpha: 0.1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
+    canvas.drawCircle(center, radius, bgPaint);
+
+    // Progress arc
+    final progressPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      2 * math.pi * progress,
+      false,
+      progressPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_TimerPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }

@@ -39,6 +39,11 @@ class EnvConfig {
     defaultValue: '',
   );
 
+  static const String youtubeApiKey = String.fromEnvironment(
+    'YOUTUBE_API_KEY',
+    defaultValue: '',
+  );
+
   static const String appEnv = String.fromEnvironment(
     'APP_ENV',
     defaultValue: 'development',
