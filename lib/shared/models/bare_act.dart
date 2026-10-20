@@ -79,6 +79,7 @@ class BareAct {
   final int totalSections;
   final String description;
   final List<Section> sections;
+  final bool isMinor;
 
   BareAct({
     required this.id,
@@ -89,7 +90,24 @@ class BareAct {
     required this.totalSections,
     required this.description,
     required this.sections,
+    this.isMinor = false,
   });
+
+  bool get isMinorAct =>
+      isMinor ||
+      category.toLowerCase().contains('minor') ||
+      [
+        'ica',
+        'sra',
+        'limitation',
+        'nia',
+        'tpa',
+        'pocso',
+        'arbitration',
+        'jj_act',
+        'contract',
+        'commercial',
+      ].contains(id.toLowerCase());
 
   factory BareAct.fromJson(Map<String, dynamic> json) {
     return BareAct(
@@ -100,6 +118,7 @@ class BareAct {
       category: json['category'] ?? 'General',
       totalSections: json['totalSections'] ?? 0,
       description: json['description'] ?? '',
+      isMinor: json['isMinor'] ?? false,
       sections: (json['sections'] as List<dynamic>?)
               ?.map((e) => Section.fromJson(e as Map<String, dynamic>))
               .toList() ??

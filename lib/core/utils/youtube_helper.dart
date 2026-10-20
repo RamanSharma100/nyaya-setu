@@ -226,6 +226,211 @@ class YouTubeHelper {
       duration: '16:15',
       description: 'Effect of substituting or adding new plaintiff or defendant under Section 21 Limitation Act.',
     ),
+
+    // Indian Contract Act (ICA) - Section 56 (Doctrine of Frustration)
+    'contract': const LegalYouTubeVideo(
+      videoId: 'K44H3kQkM4U',
+      title: 'Indian Contract Act 1872 | Section 56 Doctrine of Frustration | Judiciary Prep',
+      channelName: 'Judiciary Prep',
+      duration: '19:40',
+      description: 'Doctrine of Frustration, impossibility of performance, and Satyabrata Ghose ratio.',
+    ),
+    'frustration': const LegalYouTubeVideo(
+      videoId: 'K44H3kQkM4U',
+      title: 'Doctrine of Frustration Sec 56 Contract Act Explained',
+      channelName: 'Judiciary Prep',
+      duration: '19:40',
+      description: 'Grounds for frustration, destruction of subject matter, and supervening impossibility.',
+    ),
+    'ica 56': const LegalYouTubeVideo(
+      videoId: 'K44H3kQkM4U',
+      title: 'Section 56 Indian Contract Act - Subsequent Impossibility',
+      channelName: 'Judiciary Prep',
+      duration: '19:40',
+      description: 'Detailed analysis of Section 56 ICA and Taylor v Caldwell principles.',
+    ),
+    'ica 73': const LegalYouTubeVideo(
+      videoId: 'X0hZ0fRz1V4',
+      title: 'Damages for Breach of Contract | Section 73 & 74 ICA',
+      channelName: 'StudyIQ Judiciary',
+      duration: '18:10',
+      description: 'Hadley v Baxendale rule, ordinary damages vs special damages under Indian Contract Act.',
+    ),
+    'damages': const LegalYouTubeVideo(
+      videoId: 'X0hZ0fRz1V4',
+      title: 'Section 73 Contract Act: Compensation for Breach of Contract',
+      channelName: 'StudyIQ Judiciary',
+      duration: '18:10',
+      description: 'Remoteness of damage and mitigation of loss in Indian contract law.',
+    ),
+
+    // Specific Relief Act (SRA) - Section 10 & 6 & Injunctions
+    'sra': const LegalYouTubeVideo(
+      videoId: 'sX8H3N1L8kQ',
+      title: 'Specific Relief Act 1963 | Section 10 Specific Performance 2018 Amendment',
+      channelName: 'Judiciary By PW',
+      duration: '21:10',
+      description: 'Post-2018 mandatory specific performance regime under Section 10 of SRA.',
+    ),
+    'specific relief': const LegalYouTubeVideo(
+      videoId: 'sX8H3N1L8kQ',
+      title: 'Specific Relief Act (SRA 1963) Detailed Course for PCS-J',
+      channelName: 'Judiciary By PW',
+      duration: '21:10',
+      description: 'Recovery of possession, specific performance, and injunction principles.',
+    ),
+    'sra 10': const LegalYouTubeVideo(
+      videoId: 'sX8H3N1L8kQ',
+      title: 'Section 10 Specific Relief Act - Mandatory Specific Performance',
+      channelName: 'Judiciary By PW',
+      duration: '21:10',
+      description: 'How the 2018 amendment replaced discretionary relief with mandatory statutory performance.',
+    ),
+    'sra 6': const LegalYouTubeVideo(
+      videoId: 'yL9Vb31p9dQ',
+      title: 'Section 6 Specific Relief Act | Summary Suit for Dispossession',
+      channelName: 'Law Sikho',
+      duration: '14:25',
+      description: 'Recovery of possession by person dispossessed without due process within 6 months.',
+    ),
+    'injunction': const LegalYouTubeVideo(
+      videoId: 'mK3H7V8pQ94',
+      title: 'Temporary & Perpetual Injunctions | SRA Section 38 & CPC Order 39',
+      channelName: 'StudyIQ Judiciary',
+      duration: '23:15',
+      description: 'Prima facie case, balance of convenience, and irreparable loss for injunctions.',
+    ),
+
+    // Limitation Act, 1963 - Section 5 (Condonation of Delay) & Section 6
+    'limitation': const LegalYouTubeVideo(
+      videoId: 'vMR00_GjwXA',
+      title: 'Limitation Act 1963 | Section 5 Condonation of Delay for Sufficient Cause',
+      channelName: 'StudyIQ Judiciary',
+      duration: '17:50',
+      description: 'Sufficient cause doctrine, Collector Land Acquisition v Katiji, and exclusion of suits.',
+    ),
+    'condonation': const LegalYouTubeVideo(
+      videoId: 'vMR00_GjwXA',
+      title: 'Section 5 Limitation Act: Condonation of Delay Masterclass',
+      channelName: 'StudyIQ Judiciary',
+      duration: '17:50',
+      description: 'When does Section 5 apply (appeals & applications, NOT original suits) and sufficient cause.',
+    ),
+    'limitation 5': const LegalYouTubeVideo(
+      videoId: 'vMR00_GjwXA',
+      title: 'Section 5 Limitation Act - Sufficient Cause & Liberal Approach',
+      channelName: 'StudyIQ Judiciary',
+      duration: '17:50',
+      description: 'In-depth analysis of Ramlal v Rewa Coalfields and modern Supreme Court precedents.',
+    ),
+    'limitation 6': const LegalYouTubeVideo(
+      videoId: 'dK5H91aQ92L',
+      title: 'Section 6 & 7 Limitation Act | Legal Disability Explained',
+      channelName: 'Judiciary Prep',
+      duration: '15:20',
+      description: 'Minority, idiocy, insanity and calculation of limitation after disability ceases.',
+    ),
+
+    // Negotiable Instruments Act (NI Act) - Section 138 (Cheque Dishonour)
+    'ni act': const LegalYouTubeVideo(
+      videoId: 'n9X81kQ92aA',
+      title: 'Section 138 Negotiable Instruments Act | Cheque Bounce Law & Trial Procedure',
+      channelName: 'Drishti Judiciary',
+      duration: '24:40',
+      description: 'Complete breakdown of Section 138, 139 presumption, statutory notice, and jurisdiction.',
+    ),
+    '138': const LegalYouTubeVideo(
+      videoId: 'n9X81kQ92aA',
+      title: 'Section 138 NI Act Cheque Bounce Offence Explained',
+      channelName: 'Drishti Judiciary',
+      duration: '24:40',
+      description: 'Ingredients of Section 138, statutory 15 days demand notice, and Dashrath Rupsingh Rathod ruling.',
+    ),
+    'cheque bounce': const LegalYouTubeVideo(
+      videoId: 'n9X81kQ92aA',
+      title: 'Cheque Bounce Section 138 NI Act & Section 139 Presumption',
+      channelName: 'Drishti Judiciary',
+      duration: '24:40',
+      description: 'Rebutting the presumption of debt under Rangappa v Sri Mohan in cheque dishonour trials.',
+    ),
+
+    // Transfer of Property Act (TPA) - Section 52 (Lis Pendens) & Section 53A
+    'tpa': const LegalYouTubeVideo(
+      videoId: 'h8V1k092aPQ',
+      title: 'Transfer of Property Act 1882 | Section 52 Doctrine of Lis Pendens',
+      channelName: 'StudyIQ Judiciary',
+      duration: '20:30',
+      description: 'Transfer during pendency of suit, Bellamy v Sabine, and protection of decrees.',
+    ),
+    'lis pendens': const LegalYouTubeVideo(
+      videoId: 'h8V1k092aPQ',
+      title: 'Doctrine of Lis Pendens Section 52 TPA Explained',
+      channelName: 'StudyIQ Judiciary',
+      duration: '20:30',
+      description: 'Non-collusive suit, pending litigation, and subordination of transferee rights.',
+    ),
+    'tpa 52': const LegalYouTubeVideo(
+      videoId: 'h8V1k092aPQ',
+      title: 'Section 52 Transfer of Property Act - Lis Pendens Landmark Rulings',
+      channelName: 'StudyIQ Judiciary',
+      duration: '20:30',
+      description: 'Essential conditions of Lis Pendens and application to involuntary sales.',
+    ),
+    'part performance': const LegalYouTubeVideo(
+      videoId: 'mP8K319a2bC',
+      title: 'Section 53A TPA | Doctrine of Part Performance',
+      channelName: 'Judiciary Prep',
+      duration: '16:45',
+      description: 'Shield not sword doctrine, contract in writing, and taking of possession.',
+    ),
+
+    // Protection of Children from Sexual Offences (POCSO Act)
+    'pocso': const LegalYouTubeVideo(
+      videoId: 'qP91k02a9Bc',
+      title: 'POCSO Act 2012 | Key Provisions, Presumptions & Special Courts',
+      channelName: 'Judiciary By PW',
+      duration: '25:10',
+      description: 'Penetrative sexual assault, Section 29 presumption of guilt, and child-friendly trial.',
+    ),
+    'pocso 5': const LegalYouTubeVideo(
+      videoId: 'qP91k02a9Bc',
+      title: 'Section 5 & 6 POCSO Act - Aggravated Penetrative Sexual Assault',
+      channelName: 'Judiciary By PW',
+      duration: '25:10',
+      description: 'Aggravated forms of sexual assault under POCSO and stringent statutory sentences.',
+    ),
+
+    // Arbitration and Conciliation Act, 1996
+    'arbitration': const LegalYouTubeVideo(
+      videoId: 'wP0182k91Aa',
+      title: 'Arbitration and Conciliation Act 1996 | Section 8, 9 & 34 Explained',
+      channelName: 'StudyIQ Judiciary',
+      duration: '22:15',
+      description: 'Reference to arbitration, interim reliefs, and setting aside arbitral award grounds.',
+    ),
+
+    // Landmark Constitutional Judgments
+    'maneka gandhi': const LegalYouTubeVideo(
+      videoId: 'vQ0182k819C',
+      title: 'Maneka Gandhi v. Union of India (1978) | Procedure Established by Law vs Due Process',
+      channelName: 'Drishti Judiciary',
+      duration: '18:50',
+      description: 'Golden Triangle of Articles 14, 19, 21 and the test of just, fair and reasonable.',
+    ),
+    'puttaswamy': const LegalYouTubeVideo(
+      videoId: 'x8192aK810A',
+      title: 'K.S. Puttaswamy v. Union of India | Right to Privacy Landmark Judgment',
+      channelName: 'NEXT IAS',
+      duration: '21:05',
+      description: '9-Judge Constitutional Bench ruling establishing Privacy as an intrinsic fundamental right.',
+    ),
+    'lalita kumari': const LegalYouTubeVideo(
+      videoId: 'wnocgQJovJ0',
+      title: 'Lalita Kumari v. Govt of UP (2014) | Mandatory Registration of FIR',
+      channelName: 'Drishti Judiciary',
+      duration: '16:40',
+      description: 'Constitution Bench mandate for registration of FIR in cognizable offences.',
+    ),
   };
 
   /// Synchronous matcher with immediate response (checks cache -> curated map).

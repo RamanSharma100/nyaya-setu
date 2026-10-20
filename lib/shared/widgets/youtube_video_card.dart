@@ -132,7 +132,7 @@ class _YouTubeVideoCardState extends State<YouTubeVideoCard> {
                       child: InkWell(
                         onTap: () {
                           if (onTap != null) {
-                            onTap!();
+                            onTap();
                           } else {
                             YouTubePlayerModal.show(context, video);
                           }
@@ -219,7 +219,7 @@ class _YouTubeVideoCardState extends State<YouTubeVideoCard> {
                 InkWell(
                   onTap: () {
                     if (onTap != null) {
-                      onTap!();
+                      onTap();
                     } else {
                       YouTubePlayerModal.show(context, video);
                     }
@@ -254,7 +254,7 @@ class _YouTubeVideoCardState extends State<YouTubeVideoCard> {
                     InkWell(
                       onTap: () {
                         if (onTap != null) {
-                          onTap!();
+                          onTap();
                         } else {
                           YouTubePlayerModal.show(context, video);
                         }

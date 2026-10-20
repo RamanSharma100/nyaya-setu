@@ -236,6 +236,216 @@ class IndianKanoonApiClient {
         currentStatus:
             'Locus Classicus on Capital Punishment. Applied in BNS Section 103 sentencing evaluations.',
       ),
+      CaseLaw(
+        id: 'sc_07',
+        title: 'Kesavananda Bharati v. State of Kerala',
+        citation: '(1973) 4 SCC 225',
+        year: 1973,
+        bench: '13-Judge Constitution Bench (S.M. Sikri C.J., H.R. Khanna, et al.)',
+        subject: 'Constitutional Law',
+        keyArticles: ['Article 368', 'Article 13', 'Article 31C'],
+        ratioDecidendi:
+            'Parliament has wide constituent power to amend any part of the Constitution under Article 368, but this amending power cannot be exercised to alter, violate, or emasculate the Basic Structure of the Constitution.',
+        facts:
+            'Petitioner challenged Kerala land reform amendments and the 24th, 25th, and 29th Constitutional Amendments curtailing religious property rights.',
+        holding:
+            'Upheld validity of 24th Amendment while propounding the inviolable Basic Structure Doctrine.',
+        examSignificance: 'The most important judgment in Indian Constitutional Law; mandatory 20 marks question.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Kesavananda+Bharati+v.+State+of+Kerala',
+        whatHappened:
+            'Largest Constitutional Bench (13 Judges) in Indian history was constituted to review Golak Nath. By a 7-6 majority, the Supreme Court ruled that Article 368 contains inherent limitations.',
+        currentStatus:
+            'Foundational Constitutional Doctrine. Continues to govern judicial review of constitutional amendments.',
+      ),
+      CaseLaw(
+        id: 'sc_08',
+        title: 'Maneka Gandhi v. Union of India',
+        citation: '(1978) 1 SCC 248',
+        year: 1978,
+        bench: '7-Judge Constitution Bench (M.H. Beg C.J., P.N. Bhagwati, et al.)',
+        subject: 'Constitutional Law',
+        keyArticles: ['Article 21', 'Article 19', 'Article 14'],
+        ratioDecidendi:
+            '"Procedure established by law" under Article 21 must be right, just, fair, and not arbitrary, fanciful, or oppressive. Established the Golden Triangle doctrine interlinking Articles 14, 19, and 21.',
+        facts:
+            'Regional Passport Office impounded Maneka Gandhi\'s passport under Section 10(3)(c) of Passports Act "in public interest" without providing any prior notice or hearing.',
+        holding:
+            'Principles of Natural Justice (audi alteram partem) are implicit in Article 21; right to travel abroad is an integral part of personal liberty.',
+        examSignificance: 'Cornerstone authority for Substantive Due Process and Natural Justice in PCS-J Mains.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Maneka+Gandhi+v.+Union+of+India',
+        whatHappened:
+            'Passport impounded during Emergency aftermath without giving reasons. Supreme Court overruled A.K. Gopalan (1950) and expanded the horizon of Article 21.',
+        currentStatus:
+            'Active Cornerstone Precedent. Expanded Article 21 into an organic charter of human dignity.',
+      ),
+      CaseLaw(
+        id: 'sc_09',
+        title: 'Navtej Singh Johar v. Union of India',
+        citation: '(2018) 10 SCC 1',
+        year: 2018,
+        bench: '5-Judge Constitution Bench (Dipak Misra C.J., R.F. Nariman, D.Y. Chandrachud, et al.)',
+        subject: 'Constitutional Law',
+        keyArticles: ['Article 14', 'Article 15', 'Article 21', 'BNS Section 63'],
+        ratioDecidendi:
+            'Consensual sexual acts of adults in private do not constitute a penal offence. Section 377 IPC was declared unconstitutional to the extent it criminalized consensual homosexual acts, affirming constitutional morality over majoritarian public morality.',
+        facts:
+            'LGBTQ+ citizens filed writ petitions under Article 32 challenging Suresh Kumar Koushal (2014) which had recriminalized Section 377.',
+        holding:
+            'Unanimously struck down discriminatory portion of Section 377 IPC and affirmed right to sexual autonomy.',
+        examSignificance: 'Mandatory landmark for Constitutional Morality and Right to Autonomy under Article 21.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Navtej+Singh+Johar+v.+Union+of+India',
+        whatHappened:
+            'Constitution Bench reviewed Suresh Koushal ruling, declaring that the law cannot treat consensual private identity as unnatural or criminal.',
+        currentStatus:
+            'Settled Constitutional Law. Directly reflected in new Bharatiya Nyaya Sanhita 2023 penal provisions.',
+      ),
+      CaseLaw(
+        id: 'sc_10',
+        title: 'Shayara Bano v. Union of India',
+        citation: '(2017) 9 SCC 1',
+        year: 2017,
+        bench: '5-Judge Constitution Bench (J.S. Khehar C.J., Kurian Joseph, R.F. Nariman, et al.)',
+        subject: 'Constitutional Law',
+        keyArticles: ['Article 14', 'Article 21', 'Article 25'],
+        ratioDecidendi:
+            'Instant Triple Talaq (Talaq-e-Biddat) was declared void, illegal, and unconstitutional. A statutory or personal law provision can be struck down on the ground of "Manifest Arbitrariness" under Article 14.',
+        facts:
+            'Writ petitions filed by Muslim women challenging unilateral, irrevocable instant triple talaq pronounced by spouses.',
+        holding:
+            'By 3:2 majority, held Talaq-e-Biddat is not an essential religious practice under Article 25 and is manifestly arbitrary.',
+        examSignificance: 'Established the "Manifest Arbitrariness" doctrine under Article 14 for PCS-J Mains.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Shayara+Bano+v.+Union+of+India',
+        whatHappened:
+            'Supreme Court struck down instant triple talaq, subsequently leading Parliament to pass the Muslim Women (Protection of Rights on Marriage) Act, 2019.',
+        currentStatus:
+            'Settled Precedent. Enunciated Manifest Arbitrariness as a potent ground for Article 14 review.',
+      ),
+      CaseLaw(
+        id: 'sc_11',
+        title: 'Anuradha Bhasin v. Union of India',
+        citation: '(2020) 3 SCC 637',
+        year: 2020,
+        bench: '3-Judge Bench (N.V. Ramana, R. Subhash Reddy, B.R. Gavai JJ.)',
+        subject: 'Constitutional Law',
+        keyArticles: ['Article 19(1)(a)', 'Article 19(1)(g)', 'BNSS Section 163', 'CrPC Section 144'],
+        ratioDecidendi:
+            'Freedom of speech and expression and freedom to practice any profession over the medium of internet is constitutionally protected under Article 19(1)(a) and 19(1)(g). Indefinite suspension of internet services is illegal; orders must satisfy proportionality.',
+        facts:
+            'Executive orders suspended internet and telecom connectivity in Jammu & Kashmir following abrogation of Article 370.',
+        holding:
+            'Directed periodic review of suspension orders; orders under Section 144 CrPC (now BNSS 163) cannot be used to suppress legitimate expression.',
+        examSignificance: 'Key modern precedent for Digital Rights and Proportionality Review in Mains.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Anuradha+Bhasin+v.+Union+of+India',
+        whatHappened:
+            'Newspaper editor challenged prolonged shutdown of digital and telecom infrastructure in Srinagar. Supreme Court laid down mandatory procedural guidelines for telecom suspensions.',
+        currentStatus:
+            'Active Binding Law (2020). Standard citation in administrative law and Article 19 reasonableness tests.',
+      ),
+      CaseLaw(
+        id: 'sc_12',
+        title: 'Vishaka v. State of Rajasthan',
+        citation: '(1997) 6 SCC 241',
+        year: 1997,
+        bench: '3-Judge Bench (J.S. Verma C.J., Sujata V. Manohar, B.N. Kirpal JJ.)',
+        subject: 'Criminal & Gender Justice',
+        keyArticles: ['Article 14', 'Article 19(1)(g)', 'Article 21', 'BNS Section 74'],
+        ratioDecidendi:
+            'Laid down mandatory "Vishaka Guidelines" prohibiting sexual harassment of women at workplaces until statutory enactment. In absence of domestic legislation, international conventions like CEDAW can be relied upon to construe constitutional guarantees.',
+        facts:
+            'Gang-rape of social worker Bhanwari Devi in Rajasthan while campaigning against child marriage; PIL filed for workplace safety norms.',
+        holding:
+            'Mandated Internal Complaints Committees (ICC) across all public and private establishments.',
+        examSignificance: 'Foundational ratio for POSH Act, 2013 and BNS Section 74 in PCS-J gender justice questions.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Vishaka+v.+State+of+Rajasthan',
+        whatHappened:
+            'PIL brought by social activists led Supreme Court to formulate judicial legislation bridging statutory gaps until Parliament enacted POSH Act 2013.',
+        currentStatus:
+            'Codified into POSH Act, 2013 and penal provisions of Bharatiya Nyaya Sanhita (BNS 2023).',
+      ),
+      CaseLaw(
+        id: 'sc_13',
+        title: 'D.K. Basu v. State of West Bengal',
+        citation: '(1997) 1 SCC 416',
+        year: 1997,
+        bench: '2-Judge Bench (Kuldip Singh, A.S. Anand JJ.)',
+        subject: 'Procedure & Human Rights',
+        keyArticles: ['Article 21', 'Article 22', 'BNSS Section 35', 'CrPC Section 41B'],
+        ratioDecidendi:
+            'Custodial violence and torture violate human dignity under Article 21. Prescribed 11 mandatory guidelines for arrest, memo preparation, medical examination, and informing family members.',
+        facts:
+            'Executive Chairman of Legal Aid Services, West Bengal sent letter regarding recurrent custodial deaths in police lockups.',
+        holding:
+            'Failure of arresting officers to follow the 11 guidelines renders them liable for contempt of court and departmental action.',
+        examSignificance: 'Mandatory 10 marks question in Criminal Procedure & Human Rights for all State Judicial exams.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=D.K.+Basu+v.+State+of+West+Bengal',
+        whatHappened:
+            'Supreme Court converted letter petition into landmark PIL and codified arrest safeguards, subsequently incorporated into Section 41A-41D CrPC (now BNSS 35-38).',
+        currentStatus:
+            'Active Binding Law. Substantively enacted into the procedural architecture of BNSS 2023.',
+      ),
+      CaseLaw(
+        id: 'sc_14',
+        title: 'Arnesh Kumar v. State of Bihar',
+        citation: '(2014) 8 SCC 273',
+        year: 2014,
+        bench: '2-Judge Bench (Chandramauli Kr. Prasad, Pinaki Chandra Ghose JJ.)',
+        subject: 'Procedure & Arrest',
+        keyArticles: ['BNSS Section 35(3)', 'CrPC Section 41A', 'BNS Section 85'],
+        ratioDecidendi:
+            'Police officers shall not automatically arrest an accused when offence carries imprisonment up to 7 years. Mandatory to issue Notice of Appearance under Section 41A CrPC (now BNSS Section 35(3)) unless special reasons recorded in writing.',
+        facts:
+            'Anticipatory bail petition in a Section 498A IPC matrimonial harassment dispute addressing routine, mechanical arrests.',
+        holding:
+            'Magistrates authorizing detention without verifying compliance by police officer are liable for departmental action.',
+        examSignificance: 'High-frequency question in PCS-J Prelims and Criminal Procedure Mains on Notice of Appearance.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Arnesh+Kumar+v.+State+of+Bihar',
+        whatHappened:
+            'Supreme Court issued nationwide check-list for police and judicial magistrates to prevent unnecessary arrests and protect personal liberty.',
+        currentStatus:
+            'Active Binding Precedent. Reaffirmed in Satender Kumar Antil (2022) and codified in BNSS Section 35.',
+      ),
+      CaseLaw(
+        id: 'sc_15',
+        title: 'Satender Kumar Antil v. Central Bureau of Investigation',
+        citation: '(2022) 10 SCC 51',
+        year: 2022,
+        bench: '2-Judge Bench (S.K. Kaul, M.M. Sundresh JJ.)',
+        subject: 'Procedure & Bail Jurisprudence',
+        keyArticles: ['BNSS Section 479', 'BNSS Section 482', 'CrPC Section 437', 'CrPC Section 439'],
+        ratioDecidendi:
+            'Enunciated comprehensive bail guidelines categorizing offences into Category A (up to 7 yrs), B (economic), C (special acts), and D (anticipatory). Reiterated "Bail is the rule, jail is the exception". Directed timely disposal of regular bail within 2 weeks.',
+        facts:
+            'Special Leave Petition addressing widespread practice of remanding accused persons to custody upon appearance post-chargesheet despite non-arrest during investigation.',
+        holding:
+            'Court appearance pursuant to summons without arrest does not require taking accused into custody.',
+        examSignificance: 'The definitive modern judgment on Indian Bail Jurisprudence for Judicial Services Mains.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=Satender+Kumar+Antil+v.+Central+Bureau+of+Investigation',
+        whatHappened:
+            'Supreme Court issued comprehensive directions to streamline bail processing across trial courts and suggested Parliament enact a separate Bail Act.',
+        currentStatus:
+            'Leading Binding Authority (2022) on Bail across all High Courts and Trial Courts in India.',
+      ),
+      CaseLaw(
+        id: 'sc_16',
+        title: 'A.R. Antulay v. R.S. Nayak',
+        citation: '(1992) 1 SCC 225',
+        year: 1992,
+        bench: '5-Judge Constitution Bench (B.C. Ray, M.N. Venkatachaliah, et al.)',
+        subject: 'Criminal Procedure & Article 21',
+        keyArticles: ['Article 21', 'BNSS Section 346', 'CrPC Section 309'],
+        ratioDecidendi:
+            'Right to speedy trial encompasses all stages: investigation, inquiry, trial, appeal, and revision. Though no fixed outer time limit can be laid down, systemic delay violating Article 21 can lead to quashing of proceedings.',
+        facts:
+            'Protracted prosecution of former Chief Minister stretching over years without conclusion of trial.',
+        holding:
+            'Speedy trial is an inalienable component of fair procedure under Article 21.',
+        examSignificance: 'Mandatory landmark for Right to Speedy Trial under Article 21 in Judicial Mains.',
+        docUrl: 'https://indiankanoon.org/search/?formInput=A.R.+Antulay+v.+R.S.+Nayak',
+        whatHappened:
+            '5-Judge Bench formulated 11 propositions summarizing the constitutional contours of Speedy Trial in Indian criminal jurisprudence.',
+        currentStatus:
+            'Settled Constitutional Doctrine. Foundation for statutory timelines introduced in BNSS 2023.',
+      ),
     ];
   }
 

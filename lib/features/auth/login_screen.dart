@@ -4,11 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/analytics/analytics_service.dart';
 import '../../core/auth/auth_service.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import '../../shared/widgets/app_monogram_logo.dart';
 import '../../shared/widgets/google_sign_in_button.dart';
+import '../../shared/widgets/legal_compliance_modal.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -60,6 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   }
 
   Future<void> _handleGoogleSignIn() async {
+    AnalyticsService.trackButtonClick('google_sign_in_button', screen: 'login');
     final router = GoRouter.of(context);
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _isLoading = true);
@@ -69,6 +72,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     setState(() => _isLoading = false);
 
     if (success) {
+      final profile = ref.read(userProfileProvider);
+      await AnalyticsService.recordLogin(
+        method: 'google',
+        email: profile.email,
+        name: profile.displayName,
+      );
       router.go('/dashboard');
     } else {
       messenger.showSnackBar(
@@ -448,7 +457,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             width: double.infinity,
             height: 50,
             child: OutlinedButton(
-              onPressed: () => context.go('/dashboard'),
+              onPressed: () async {
+                final router = GoRouter.of(context);
+                AnalyticsService.trackButtonClick('explore_as_guest_button', screen: 'login');
+                await AnalyticsService.recordLogin(method: 'guest');
+                if (!mounted) return;
+                router.go('/dashboard');
+              },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.white.withValues(alpha: 0.25), width: 1.2),
                 shape: RoundedRectangleBorder(
@@ -466,7 +481,87 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // Google Play Policy Mandate: Terms & Privacy Link
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                'By signing in, you agree to our ',
+                style: GoogleFonts.inter(color: Colors.white60, fontSize: 11),
+              ),
+              InkWell(
+                onTap: () {
+                  AnalyticsService.trackButtonClick('terms_of_service_link', screen: 'login');
+                  LegalComplianceModal.showTermsOfService(context);
+                },
+                child: const Text(
+                  'Terms of Service',
+                  style: TextStyle(
+                    color: AppColors.accentGold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              Text(
+                ' & ',
+                style: GoogleFonts.inter(color: Colors.white60, fontSize: 11),
+              ),
+              InkWell(
+                onTap: () {
+                  AnalyticsService.trackButtonClick('privacy_policy_link', screen: 'login');
+                  LegalComplianceModal.showPrivacyPolicy(context);
+                },
+                child: const Text(
+                  'Privacy Policy',
+                  style: TextStyle(
+                    color: AppColors.accentGold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Google Play Government Apps Policy Disclaimer
+          InkWell(
+            onTap: () {
+              AnalyticsService.trackButtonClick('gov_disclaimer_link', screen: 'login');
+              LegalComplianceModal.showGovernmentDisclaimer(context);
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.info_outline_rounded, size: 13, color: Colors.white54),
+                  const SizedBox(width: 5),
+                  Flexible(
+                    child: Text(
+                      'Independent Prep Platform • Not affiliated with Govt of India',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        color: Colors.white54,
+                        fontSize: 10,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
 
           // Stats row
           Row(

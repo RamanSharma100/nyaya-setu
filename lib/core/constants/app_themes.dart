@@ -179,9 +179,14 @@ class AppThemes {
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.bgLight,
         selectedColor: AppColors.primaryNavy,
+        checkmarkColor: Colors.white,
         labelPadding: const EdgeInsets.symmetric(horizontal: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: BorderSide.none,
+      ),
+      expansionTileTheme: const ExpansionTileThemeData(
+        iconColor: AppColors.primaryNavy,
+        collapsedIconColor: AppColors.primaryNavy,
       ),
       dividerTheme: DividerThemeData(
         color: Colors.grey.shade100,
@@ -359,6 +364,18 @@ class AppThemes {
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         hintStyle: GoogleFonts.inter(color: Colors.white30, fontSize: 14),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.tertiaryNavy,
+        selectedColor: AppColors.accentGold,
+        checkmarkColor: AppColors.primaryNavy,
+        labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        side: BorderSide.none,
+      ),
+      expansionTileTheme: const ExpansionTileThemeData(
+        iconColor: AppColors.accentGold,
+        collapsedIconColor: Colors.white70,
       ),
       dividerTheme: const DividerThemeData(
         color: Colors.white10,

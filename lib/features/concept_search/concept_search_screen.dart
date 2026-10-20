@@ -27,8 +27,11 @@ class _ConceptSearchScreenState extends ConsumerState<ConceptSearchScreen>
     with SingleTickerProviderStateMixin {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late AnimationController _searchFocusController;
   bool _searchFocused = false;
+  int _visibleCount = 6;
+  bool _isLoadingMore = false;
 
   final List<String> _quickSearches = [
     'Res Judicata',
@@ -48,11 +51,35 @@ class _ConceptSearchScreenState extends ConsumerState<ConceptSearchScreen>
       vsync: this,
       duration: const Duration(milliseconds: 250),
     );
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.position.pixels;
+    if (current >= maxScroll - 260 && !_isLoadingMore) {
+      _loadMore();
+    }
+  }
+
+  void _loadMore() async {
+    final searchResults = ref.read(dynamicConceptSearchProvider(_searchQuery)).valueOrNull ?? [];
+    if (_visibleCount >= searchResults.length || _isLoadingMore) return;
+
+    setState(() => _isLoadingMore = true);
+    await Future.delayed(const Duration(milliseconds: 250));
+    if (!mounted) return;
+    setState(() {
+      _visibleCount = (_visibleCount + 6).clamp(0, searchResults.length);
+      _isLoadingMore = false;
+    });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     _searchFocusController.dispose();
     super.dispose();
   }
@@ -64,8 +91,21 @@ class _ConceptSearchScreenState extends ConsumerState<ConceptSearchScreen>
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification is ScrollUpdateNotification ||
+              notification is OverscrollNotification ||
+              notification is ScrollEndNotification) {
+            final metrics = notification.metrics;
+            if (metrics.pixels >= metrics.maxScrollExtent - 300 && !_isLoadingMore) {
+              _loadMore();
+            }
+          }
+          return false;
+        },
+        child: CustomScrollView(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics()),
         slivers: [
           // Hero search AppBar
           SliverAppBar(
@@ -107,12 +147,141 @@ class _ConceptSearchScreenState extends ConsumerState<ConceptSearchScreen>
                 if (!hasQuery) {
                   return SliverToBoxAdapter(child: _buildStartSearchState());
                 }
+                final displayedCount = _visibleCount.clamp(0, items.length);
+                final hasMore = displayedCount < items.length;
+
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return _buildConceptCard(context, items[index], index);
+                      // Top Window Status Badge
+                      if (index == 0) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12, top: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 7,
+                                    height: 7,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.emeraldGreen,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Live Window: $displayedCount of ${items.length} concept results',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimaryDark,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppColors.accentGold.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  '⚡ Virtualized',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.accentGold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      // Bottom Loader / End Indicator
+                      if (index == displayedCount + 1) {
+                        if (_isLoadingMore) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation(AppColors.accentGold),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Loading next live concepts window...',
+                                  style: GoogleFonts.inter(fontSize: 11.5, color: Colors.grey.shade600),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        if (hasMore) {
+                          final remaining = items.length - displayedCount;
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 14),
+                            child: Material(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              child: InkWell(
+                                onTap: _loadMore,
+                                borderRadius: BorderRadius.circular(12),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.arrow_downward_rounded, size: 16, color: AppColors.accentGold),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Load More ($remaining remaining) • Scroll down to auto-load',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primaryNavy,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        if (!hasMore && items.length > 6) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'All ${items.length} live legal concepts loaded ✓',
+                              style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500),
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }
+
+                      final itemIndex = index - 1;
+                      return _buildConceptCard(context, items[itemIndex], itemIndex);
                     },
-                    childCount: items.length,
+                    childCount: displayedCount + 2,
                   ),
                 );
               },
@@ -122,7 +291,8 @@ class _ConceptSearchScreenState extends ConsumerState<ConceptSearchScreen>
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildSearchHeader(bool hasQuery) {

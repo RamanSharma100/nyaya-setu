@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../storage/hive_service.dart';
+
 class UserProfile {
   final String displayName;
   final String email;
@@ -107,6 +109,45 @@ class AuthService {
     await box.clear();
     await box.put('is_logged_in', false);
   }
+
+  /// Google Play Store Compliance: Account & Personal Data Deletion
+  static Future<void> deleteAccountAndData() async {
+    try {
+      await _googleSignIn.disconnect();
+    } catch (_) {
+      try {
+        await _googleSignIn.signOut();
+      } catch (_) {}
+    }
+    if (!Hive.isBoxOpen(authBoxName)) {
+      await Hive.openBox(authBoxName);
+    }
+    final box = Hive.box(authBoxName);
+    await box.clear();
+    await box.put('is_logged_in', false);
+
+    // Clear user bookmarks & notes from Hive
+    try {
+      if (Hive.isBoxOpen(HiveService.notesBoxName)) {
+        await Hive.box(HiveService.notesBoxName).clear();
+      }
+      if (Hive.isBoxOpen(HiveService.bookmarksBoxName)) {
+        await Hive.box(HiveService.bookmarksBoxName).clear();
+      }
+      if (Hive.isBoxOpen(HiveService.handmadeNotesBoxName)) {
+        await Hive.box(HiveService.handmadeNotesBoxName).clear();
+      }
+      if (Hive.isBoxOpen(HiveService.handmadeNotesBookmarksBoxName)) {
+        await Hive.box(HiveService.handmadeNotesBookmarksBoxName).clear();
+      }
+      if (Hive.isBoxOpen(HiveService.analyticsEventsBoxName)) {
+        await Hive.box(HiveService.analyticsEventsBoxName).clear();
+      }
+      if (Hive.isBoxOpen(HiveService.analyticsMetricsBoxName)) {
+        await Hive.box(HiveService.analyticsMetricsBoxName).clear();
+      }
+    } catch (_) {}
+  }
 }
 
 final userProfileProvider = StateNotifierProvider<UserAuthNotifier, UserProfile>((ref) {
@@ -125,6 +166,12 @@ class UserAuthNotifier extends StateNotifier<UserProfile> {
   Future<void> logout() async {
     await AuthService.signOut();
     state = AuthService.getUserProfile();
+  }
+
+  /// Initiates complete account erasure per Google Play user data policy
+  Future<void> deleteAccount() async {
+    await AuthService.deleteAccountAndData();
+    state = UserProfile.guest();
   }
 
   void updateTargetState(String stateCode) {

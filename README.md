@@ -190,15 +190,20 @@ The output bundle will be located at:
 build/app/outputs/bundle/release/app-release.aab
 ```
 
-### 2. Build Release APK (Direct Sideloading)
-For direct distribution or local device testing:
+### 2. Build Release APK (Direct Sideloading & Zero-Leak Security)
+For direct distribution or local device testing with full symbol obfuscation and compile-time secret injection:
 ```bash
-flutter build apk --release
+flutter build apk --release \
+  --obfuscate \
+  --split-debug-info=build/app/outputs/symbols \
+  --dart-define-from-file=.env
 ```
 The output APK will be located at:
 ```
 build/app/outputs/flutter-apk/app-release.apk
 ```
+
+> 🛡️ **Anti-Reverse Engineering & Secret Protection**: See our detailed [APK Security & .env Protection Guide](APK_SECURITY_AND_ENV_PROTECTION_GUIDE.md) for how `.env` is protected against extraction with `apktool` and `jadx`.
 
 ### 3. Signing Configuration
 Before uploading to Google Play Console, ensure your release keystore is configured in `android/key.properties`:

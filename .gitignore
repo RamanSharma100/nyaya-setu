@@ -171,3 +171,12 @@ app.*.symbols
 
 *.apk
 service.apps.googleusercontent.com.json
+
+# Documentation, Guides, and Checklists
+*GUIDE*.md
+*SETUP*.md
+*CHECKLIST*.md
+ANALYTICS_AND_LOGIN_EMAIL_SETUP.md
+APK_SECURITY_AND_ENV_PROTECTION_GUIDE.md
+PLAY_STORE_RELEASE_CHECKLIST.md
+PRIVACY_POLICY.md

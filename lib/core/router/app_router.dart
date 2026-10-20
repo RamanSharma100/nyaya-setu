@@ -9,9 +9,12 @@ import '../../features/case_laws/case_laws_screen.dart';
 import '../../features/concept_search/concept_search_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/gemini_ai/gemini_ai_screen.dart';
+import '../../features/handmade_notes/handmade_notes_screen.dart';
 import '../../features/mains/mains_screen.dart';
 import '../../features/prelims/prelims_screen.dart';
+import '../../features/profile/profile_screen.dart';
 import '../../features/splash/splash_screen.dart';
+import '../analytics/analytics_route_observer.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
@@ -20,12 +23,21 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/splash',
+  observers: [AnalyticsRouteObserver()],
   routes: [
     GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: '/concept_search',
       builder: (context, state) => const ConceptSearchScreen(),
+    ),
+    GoRoute(
+      path: '/handmade_notes',
+      builder: (context, state) {
+        final filter = state.uri.queryParameters['filter'];
+        final query = state.uri.queryParameters['query'];
+        return HandmadeNotesScreen(initialFilter: filter, initialQuery: query);
+      },
     ),
     GoRoute(
       path: '/gemini',
@@ -38,6 +50,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/mains',
       builder: (context, state) => const MainsScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -56,7 +72,10 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/bare_acts',
-              builder: (context, state) => const BareActsScreen(),
+              builder: (context, state) {
+                final tab = state.uri.queryParameters['tab'];
+                return BareActsScreen(initialTab: tab);
+              },
             ),
           ],
         ),

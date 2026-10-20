@@ -115,6 +115,41 @@ class LegalNewsRssClient {
         description:
             "Addressing the impact of sensationalized media reporting on pending criminal trials, the Supreme Court laid down binding guidelines for police communications.\n\nKey Highlights:\n1. Investigating agencies prohibited from disclosing unverified suspect statements prior to filing charge sheets under BNSS Section 193.\n2. Preserved the accused's fundamental right to fair trial under Article 21.\n3. High Courts empowered to initiate contempt proceedings for deliberate violation of sub-judice rules.",
       ),
+      LegalNewsItem(
+        title: "Supreme Court Directs Nationwide Digitization of Trial Court Records under e-Courts Phase III (LiveLaw)",
+        link: "https://www.livelaw.in",
+        pubDate: "Mon, 24 Aug 2026 11:15:00",
+        description:
+            "The Supreme Court of India issued binding directions to all 25 High Courts to operationalize cloud-based paperless courts and digital trial transmission.\n\nKey Highlights:\n1. Seamless integration of e-Filing 3.0 across subordinate civil judge courts.\n2. Mandates digital electronic certificate validation under BSA 2023 Section 63 for police station forensics.\n3. Virtual remand and prisoner appearance via secure video conferencing under BNSS Section 187.",
+      ),
+      LegalNewsItem(
+        title: "Bail Cannot Be Withheld as Punitive Measure: Supreme Court Grants Relief in PMLA Trial Delay (Bar & Bench)",
+        link: "https://www.barandbench.com",
+        pubDate: "Sun, 23 Aug 2026 14:40:00",
+        description:
+            "A 3-Judge Bench reiterated that prolonged incarceration without trial violates Article 21 and the statutory threshold under Section 45 PMLA cannot extinguish fundamental liberty.\n\nKey Highlights:\n1. Right to speedy trial overrides statutory bail bars when prosecution cites hundreds of witnesses.\n2. Trial courts instructed to conduct day-to-day hearings under BNSS Section 346.\n3. Reaffirmed *Manish Sisodia (2024)* and *Satender Kumar Antil (2022)* ratio.",
+      ),
+      LegalNewsItem(
+        title: "High Courts Instructed to Frame Fast-Track Arbitration Rules under SRA Section 20A (Jurist)",
+        link: "https://www.jurist.org",
+        pubDate: "Fri, 21 Aug 2026 16:20:00",
+        description:
+            "Addressing infrastructure disputes and specific relief litigation, the Supreme Court emphasized expeditious contract enforcement.\n\nKey Highlights:\n1. Strict adherence to 6-month disposal timeline for infrastructure contract suits under Specific Relief Act Section 20B.\n2. Civil courts restrained from granting mechanical stay orders against public project completion.\n3. High-yield syllabus citation for Commercial Courts Act and SRA in DJS and UP PCS-J Mains.",
+      ),
+      LegalNewsItem(
+        title: "Supreme Court Rules Preliminary Inquiry Mandatory in Matrimonial Disputes under BNS Section 85 (The Hindu)",
+        link: "https://www.thehindu.com",
+        pubDate: "Thu, 20 Aug 2026 08:30:00",
+        description:
+            "Elaborating on Section 85 of Bharatiya Nyaya Sanhita (formerly IPC 498A), the Supreme Court mandated pre-litigation mediation protocol.\n\nKey Highlights:\n1. Police officers must refer matrimonial complaints to District Family Welfare Committees before formal arrest.\n2. Protects elderly relatives and distant in-laws from omnibus allegations.\n3. Directives to Judicial Magistrates to strictly scrutinize Section 41A/BNSS 35 compliance before granting judicial custody.",
+      ),
+      LegalNewsItem(
+        title: "POCSO Act: Mandatory Age Determination by Medical Ossification Clarified by Constitution Bench (LiveLaw)",
+        link: "https://www.livelaw.in",
+        pubDate: "Tue, 18 Aug 2026 10:00:00",
+        description:
+            "A Constitution Bench clarified the evidentiary hierarchy of age verification under Section 94 of Juvenile Justice Act and POCSO trials.\n\nKey Highlights:\n1. School admission register and municipal birth certificate hold primary evidentiary value under BSA Section 29.\n2. Medical ossification test permitted only when documentary evidence is conclusively proved fabricated or absent.\n3. Special Courts cautioned against margin-of-error misapplication in statutory rape defenses.",
+      ),
     ];
   }
 }

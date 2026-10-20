@@ -7,7 +7,7 @@
         android:label="NyayaSetu"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true"
+        android:usesCleartextTraffic="false"
         android:hardwareAccelerated="true"
         android:largeHeap="true">
         <activity

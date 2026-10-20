@@ -262,6 +262,15 @@ class _SplashScreenState extends State<SplashScreen>
                           letterSpacing: 0.3,
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Educational Prep Platform • Sourced from public legal records',
+                        style: GoogleFonts.inter(
+                          color: Colors.white24,
+                          fontSize: 10,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
                     ],
                   ),
                 ),

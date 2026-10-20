@@ -1,18 +1,28 @@
+import '../storage/hive_service.dart';
+
 class EnvConfig {
-  static const String indianKanoonApiKey = String.fromEnvironment(
-    'INDIAN_KANOON_API_KEY',
-  );
+  static String get indianKanoonApiKey {
+    final custom = HiveService.getCustomApiKey('INDIAN_KANOON_API_KEY');
+    if (custom.isNotEmpty) return custom;
+    return const String.fromEnvironment('INDIAN_KANOON_API_KEY');
+  }
 
   static const String indianKanoonBaseUrl = String.fromEnvironment(
     'INDIAN_KANOON_BASE_URL',
     defaultValue: 'https://api.indiankanoon.org',
   );
 
-  static const String huggingFaceToken = String.fromEnvironment(
-    'HUGGINGFACE_API_TOKEN',
-  );
+  static String get huggingFaceToken {
+    final custom = HiveService.getCustomApiKey('HUGGINGFACE_API_TOKEN');
+    if (custom.isNotEmpty) return custom;
+    return const String.fromEnvironment('HUGGINGFACE_API_TOKEN');
+  }
 
-  static const String geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
+  static String get geminiApiKey {
+    final custom = HiveService.getCustomApiKey('GEMINI_API_KEY');
+    if (custom.isNotEmpty) return custom;
+    return const String.fromEnvironment('GEMINI_API_KEY');
+  }
 
   static const String huggingFaceBaseUrl = String.fromEnvironment(
     'HUGGINGFACE_DATASET_URL',
@@ -44,8 +54,41 @@ class EnvConfig {
     defaultValue: '',
   );
 
+  // --- PostHog Analytics Telemetry ---
+  static String get posthogApiKey {
+    final custom = HiveService.getCustomApiKey('POSTHOG_API_KEY');
+    if (custom.isNotEmpty) return custom;
+    return const String.fromEnvironment('POSTHOG_API_KEY');
+  }
+
+  static String get posthogHost {
+    final custom = HiveService.getCustomApiKey('POSTHOG_HOST');
+    if (custom.isNotEmpty) return custom;
+    return const String.fromEnvironment(
+      'POSTHOG_HOST',
+      defaultValue: 'https://us.i.posthog.com',
+    );
+  }
+
+  // --- Login Email Notification Webhook / Endpoint ---
+  static String get loginAlertWebhook {
+    final custom = HiveService.getCustomApiKey('LOGIN_ALERT_WEBHOOK');
+    if (custom.isNotEmpty) return custom;
+    return const String.fromEnvironment('LOGIN_ALERT_WEBHOOK');
+  }
+
+  static String get loginAlertEmail {
+    final custom = HiveService.getCustomApiKey('LOGIN_ALERT_EMAIL');
+    if (custom.isNotEmpty) return custom;
+    return const String.fromEnvironment(
+      'LOGIN_ALERT_EMAIL',
+      defaultValue: 'techraman100@gmail.com',
+    );
+  }
+
   static const String appEnv = String.fromEnvironment(
     'APP_ENV',
     defaultValue: 'development',
   );
 }
+

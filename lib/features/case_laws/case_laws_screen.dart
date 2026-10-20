@@ -11,6 +11,7 @@ import '../../shared/models/case_law.dart';
 import '../../shared/widgets/search_bar.dart';
 import '../../shared/widgets/web_preview_screen.dart';
 import '../../shared/widgets/youtube_video_card.dart';
+import '../../shared/widgets/windowing_infinite_scroll_list.dart';
 
 final indianKanoonClientProvider = Provider((ref) => IndianKanoonApiClient());
 final legalNewsRssClientProvider = Provider((ref) => LegalNewsRssClient());
@@ -34,6 +35,8 @@ class CaseLawsScreen extends ConsumerStatefulWidget {
 
 class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final ScrollController _casesScrollController = ScrollController();
+  final ScrollController _newsScrollController = ScrollController();
   String _searchQuery = '';
 
   @override
@@ -45,6 +48,8 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
   @override
   void dispose() {
     _tabController.dispose();
+    _casesScrollController.dispose();
+    _newsScrollController.dispose();
     super.dispose();
   }
 
@@ -72,14 +77,29 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
             height: 44,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(22),
               border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
             ),
             child: TabBar(
               controller: _tabController,
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+              onTap: (index) {
+                if (index == 0 && _casesScrollController.hasClients) {
+                  _casesScrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                } else if (index == 1 && _newsScrollController.hasClients) {
+                  _newsScrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                }
+              },
               indicator: BoxDecoration(
                 color: AppColors.accentGold,
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               labelColor: AppColors.primaryNavy,
@@ -105,10 +125,7 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
         controller: _tabController,
         children: [
           landmarkCasesAsync.when(
-            data: (cases) => RefreshIndicator(
-              onRefresh: () async => ref.refresh(landmarkCasesProvider),
-              child: _buildLandmarkCasesTab(cases),
-            ),
+            data: (cases) => _buildLandmarkCasesTab(cases),
             loading: () => const Center(child: CircularProgressIndicator(color: AppColors.accentGold)),
             error: (err, stack) => Center(
               child: Column(
@@ -127,10 +144,7 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
             ),
           ),
           legalNewsAsync.when(
-            data: (newsItems) => RefreshIndicator(
-              onRefresh: () async => ref.refresh(legalNewsProvider),
-              child: _buildLiveNewsTab(newsItems),
-            ),
+            data: (newsItems) => _buildLiveNewsTab(newsItems),
             loading: () => const Center(child: CircularProgressIndicator(color: AppColors.accentGold)),
             error: (err, stack) => Center(
               child: Column(
@@ -165,30 +179,27 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
 
     filteredCases.sort((a, b) => b.year.compareTo(a.year));
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: CustomSearchBar(
-            hintText: 'Search case name, citation, bench, or ratio...',
-            onChanged: (val) => setState(() => _searchQuery = val),
-          ),
+    return WindowingInfiniteScrollList<CaseLaw>(
+      items: filteredCases,
+      pageSize: 4,
+      controller: _casesScrollController,
+      itemLabel: 'landmark cases',
+      onRefresh: () async => ref.refresh(landmarkCasesProvider),
+      header: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: CustomSearchBar(
+          hintText: 'Search case name, citation, bench, or ratio...',
+          onChanged: (val) => setState(() => _searchQuery = val),
         ),
-        Expanded(
-          child: filteredCases.isEmpty
-              ? const Center(child: Text('No matching cases found.'))
-              : ListView.builder(
-                  padding: const EdgeInsets.only(left: 12, right: 12, bottom: 90),
-                  itemCount: filteredCases.length,
-                  itemBuilder: (context, index) {
-                    final item = filteredCases[index];
-                    final video = YouTubeHelper.getMatchingVideo('${item.title} ${item.citation}');
+      ),
+      itemBuilder: (context, item, index) {
+        final video = YouTubeHelper.getMatchingVideo('${item.title} ${item.citation}');
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      child: ExpansionTile(
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: ExpansionTile(
                         leading: const CircleAvatar(
                           backgroundColor: AppColors.primaryNavy,
                           child: Icon(Icons.balance, color: AppColors.accentGold, size: 20),
@@ -290,23 +301,20 @@ class _CaseLawsScreenState extends ConsumerState<CaseLawsScreen> with SingleTick
                         ],
                       ),
                     );
-                  },
-                ),
-        ),
-      ],
+      },
     );
   }
 
   Widget _buildLiveNewsTab(List<LegalNewsItem> news) {
-    if (news.isEmpty) {
-      return const Center(child: Text('No legal news articles available.'));
-    }
-
-    return ListView.builder(
+    return WindowingInfiniteScrollList<LegalNewsItem>(
+      items: news,
+      pageSize: 4,
+      controller: _newsScrollController,
+      itemLabel: 'legal news items',
+      onRefresh: () async => ref.refresh(legalNewsProvider),
       padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 90),
-      itemCount: news.length,
-      itemBuilder: (context, index) {
-        final item = news[index];
+      emptyWidget: const Center(child: Text('No legal news articles available.')),
+      itemBuilder: (context, item, index) {
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: Material(

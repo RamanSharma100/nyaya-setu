@@ -15,6 +15,8 @@ void main() {
     await Hive.openBox(HiveService.notesBoxName);
     await Hive.openBox(HiveService.flashcardProgressBoxName);
     await Hive.openBox(HiveService.mainsDraftsBoxName);
+    await Hive.openBox(HiveService.handmadeNotesBoxName);
+    await Hive.openBox(HiveService.handmadeNotesBookmarksBoxName);
   });
 
   testWidgets('NyayaSetu smoke test', (WidgetTester tester) async {

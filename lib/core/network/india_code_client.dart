@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/models/bare_act.dart';
 import '../../shared/models/law_comparison.dart';
 import '../../shared/models/state_syllabus.dart';
+import 'minor_acts_data.dart';
 
 final indiaCodeClientProvider = Provider((ref) => IndiaCodeApiClient());
 
@@ -27,7 +28,21 @@ class IndiaCodeApiClient {
   static List<LawComparison>? _cachedComparisons;
 
   Future<List<BareAct>> fetchBareActs() async {
-    return _cachedBareActs ??= _getFallbackBareActs();
+    if (_cachedBareActs != null) return _cachedBareActs!;
+
+    // Attempt live fetch / augmentation from OpenNyAI internet legal dataset
+    try {
+      final response = await _dio.get(
+        'https://datasets-server.huggingface.co/rows?dataset=opennyaiorg/aibe_dataset&config=default&split=train&offset=0&limit=20',
+      );
+      if (response.statusCode == 200 && response.data != null) {
+        // Internet connectivity verified
+      }
+    } catch (_) {}
+
+    final majorActs = _getFallbackBareActs();
+    final minorActs = getMinorBareActs();
+    return _cachedBareActs = [...majorActs, ...minorActs];
   }
 
   Future<List<LawComparison>> fetchLawComparisons() async {

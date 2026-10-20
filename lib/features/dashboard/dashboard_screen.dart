@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/analytics/analytics_service.dart';
 import '../../core/auth/auth_service.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/network/india_code_client.dart';
@@ -16,6 +17,8 @@ import '../bare_acts/section_detail_screen.dart';
 import '../../shared/models/bare_act.dart';
 import '../../shared/widgets/app_monogram_logo.dart';
 import '../../core/constants/app_typography.dart';
+import '../../shared/widgets/legal_compliance_modal.dart';
+import '../../shared/widgets/local_act_detail_modal.dart';
 
 final selectedStateProvider = StateProvider<String>((ref) {
   return HiveService.getSelectedState();
@@ -34,7 +37,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  final Map<String, bool> _localActsProgress = {};
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +74,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 const SizedBox(height: 12),
                 _buildQuickActionsGrid(context),
                 const SizedBox(height: 24),
+                _buildHandmadeNotesBanner(context),
+                const SizedBox(height: 24),
                 bareActsAsync.when(
                   data: (acts) => _buildSectionOfDayCard(context, acts),
                   loading: () => const SizedBox.shrink(),
@@ -97,8 +101,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   loading: () => const SizedBox.shrink(),
                   error: (e, _) => const SizedBox.shrink(),
                 ),
-                const SizedBox(height: 24),
-                _buildRoadmapCard(context),
+                const SizedBox(height: 32),
+                _buildComplianceFooter(context),
               ]),
             ),
           ),
@@ -176,7 +180,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             child: const Icon(Icons.search_rounded, size: 20, color: Colors.white),
           ),
           tooltip: 'Concept & Video Search',
-          onPressed: () => context.push('/concept_search'),
+          onPressed: () {
+            AnalyticsService.trackButtonClick('search_appbar_button', screen: 'dashboard');
+            context.push('/concept_search');
+          },
+        ),
+        IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.settings_outlined, size: 20, color: Colors.white),
+          ),
+          tooltip: 'Profile & Settings',
+          onPressed: () => context.push('/profile'),
         ),
         if (!userProfile.isLoggedIn)
           Padding(
@@ -395,11 +414,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildQuickActionsGrid(BuildContext context) {
     final actions = [
       _ActionItem(
-        icon: Icons.search_rounded,
-        title: 'Search',
-        subtitle: 'Concepts & Videos',
-        gradient: const LinearGradient(colors: [Color(0xFF1E40AF), Color(0xFF3B82F6)]),
-        onTap: () => context.push('/concept_search'),
+        icon: Icons.gavel_rounded,
+        title: 'Major Acts',
+        subtitle: 'BNS, BNSS, BSA...',
+        gradient: const LinearGradient(colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)]),
+        onTap: () => context.go('/bare_acts?tab=major'),
+      ),
+      _ActionItem(
+        icon: Icons.menu_book_rounded,
+        title: 'Minor Acts',
+        subtitle: 'Contract, SRA, TPA...',
+        gradient: const LinearGradient(colors: [Color(0xFF92400E), Color(0xFFD97706)]),
+        onTap: () => context.go('/bare_acts?tab=minor'),
+      ),
+      _ActionItem(
+        icon: Icons.note_alt_rounded,
+        title: 'Notes & Ratios',
+        subtitle: 'Handmade Digests',
+        gradient: const LinearGradient(colors: [Color(0xFF78350F), Color(0xFFB45309)]),
+        onTap: () => context.push('/handmade_notes'),
+      ),
+      _ActionItem(
+        icon: Icons.account_balance_rounded,
+        title: 'Case Laws',
+        subtitle: 'SC Precedents',
+        gradient: const LinearGradient(colors: [Color(0xFF1E293B), Color(0xFF334155)]),
+        onTap: () => context.go('/case_laws'),
       ),
       _ActionItem(
         icon: Icons.quiz_rounded,
@@ -412,29 +452,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         icon: Icons.edit_note_rounded,
         title: 'Mains',
         subtitle: 'Answer Writing',
-        gradient: const LinearGradient(colors: [Color(0xFF92400E), Color(0xFFD97706)]),
-        onTap: () => context.push('/mains'),
-      ),
-      _ActionItem(
-        icon: Icons.auto_awesome_rounded,
-        title: 'Nyaya AI',
-        subtitle: 'AI Assistant',
-        gradient: const LinearGradient(colors: [Color(0xFF5B21B6), Color(0xFF8B5CF6)]),
-        onTap: () => context.go('/gemini_tab'),
-      ),
-      _ActionItem(
-        icon: Icons.menu_book_rounded,
-        title: 'Bare Acts',
-        subtitle: 'BNS, BNSS, BSA',
         gradient: const LinearGradient(colors: [Color(0xFF881337), Color(0xFFBE123C)]),
-        onTap: () => context.go('/bare_acts'),
-      ),
-      _ActionItem(
-        icon: Icons.gavel_rounded,
-        title: 'Case Laws',
-        subtitle: 'SC Judgments',
-        gradient: const LinearGradient(colors: [Color(0xFF1E293B), Color(0xFF334155)]),
-        onTap: () => context.go('/case_laws'),
+        onTap: () => context.push('/mains'),
       ),
     ];
 
@@ -468,6 +487,101 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
+  Widget _buildHandmadeNotesBanner(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF78350F), Color(0xFFB45309), Color(0xFFD97706)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB45309).withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            AnalyticsService.trackButtonClick('handmade_notes_banner_dashboard', screen: 'dashboard');
+            context.push('/handmade_notes');
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text('📝', style: TextStyle(fontSize: 26)),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.accentGold,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text(
+                              'TOPPER REVISION',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryNavy,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const Text(
+                            'Visual Notes & Ratios',
+                            style: TextStyle(fontSize: 11, color: Colors.white70),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Handwritten Notes & Landmark Digests',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'High-yield visual memory notes, flowcharts, landmark SC ratios & exam mnemonics',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.85),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildActionCard(_ActionItem item, int index) {
     return Container(
       decoration: BoxDecoration(
@@ -485,7 +599,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
-          onTap: item.onTap,
+          onTap: () {
+            AnalyticsService.trackButtonClick('quick_action_${item.title.toLowerCase().replaceAll(' ', '_')}', screen: 'dashboard');
+            item.onTap();
+          },
           borderRadius: BorderRadius.circular(18),
           splashColor: Colors.white.withValues(alpha: 0.2),
           highlightColor: Colors.white.withValues(alpha: 0.1),
@@ -644,7 +761,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Widget _buildLocalActsProgress(StateSyllabus selected, String currentStateCode) {
-    final completedCount = _localActsProgress.values.where((v) => v).length;
+    final completedCount = HiveService.getLocalActsCompletedCount(currentStateCode, selected.localActs);
     final totalCount = selected.localActs.length;
     final progress = totalCount > 0 ? completedCount / totalCount : 0.0;
 
@@ -690,7 +807,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
@@ -700,18 +816,25 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ],
           ),
-          child: Column(
-            children: selected.localActs.asMap().entries.map((entry) {
-              final idx = entry.key;
-              final act = entry.value;
-              final isDone = _localActsProgress[act] ?? false;
+          child: Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: selected.localActs.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final act = entry.value;
+                final isDone = HiveService.isLocalActCompleted(currentStateCode, act);
 
               return Column(
                 children: [
                   ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     leading: GestureDetector(
-                      onTap: () => setState(() => _localActsProgress[act] = !isDone),
+                      onTap: () async {
+                        await HiveService.toggleLocalActCompleted(currentStateCode, act);
+                        setState(() {});
+                      },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
                         width: 26,
@@ -746,7 +869,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         color: isDone ? AppColors.emeraldGreen : AppColors.textMutedDark,
                       ),
                     ),
-                    onTap: () => setState(() => _localActsProgress[act] = !isDone),
+                    trailing: const Icon(Icons.info_outline_rounded, size: 18, color: Colors.grey),
+                    onTap: () {
+                      LocalActDetailModal.show(
+                        context,
+                        stateCode: currentStateCode,
+                        actName: act,
+                        onStatusChanged: () => setState(() {}),
+                      );
+                    },
                   ),
                   if (idx < selected.localActs.length - 1)
                     Divider(
@@ -759,121 +890,94 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             }).toList(),
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
-  Widget _buildRoadmapCard(BuildContext context) {
-    final roadmapItems = [
-      _RoadmapItem(
-        emoji: '🤖',
-        title: 'NyayaAI Mains Evaluator',
-        desc: 'Instant AI scoring on judicial answers against IRAC rubrics.',
-        color: AppColors.violetPurple,
+  Widget _buildComplianceFooter(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
       ),
-      _RoadmapItem(
-        emoji: '🎧',
-        title: 'Audio Bare Acts',
-        desc: 'Listen to section summaries and SC ratios on the go.',
-        color: AppColors.sapphireBlue,
-      ),
-      _RoadmapItem(
-        emoji: '📊',
-        title: 'Performance Analytics',
-        desc: 'Subject-wise accuracy & prelims readiness score.',
-        color: AppColors.emeraldGreen,
-      ),
-      _RoadmapItem(
-        emoji: '🌐',
-        title: 'Full Offline Sync',
-        desc: 'Study BNS/BNSS/BSA completely offline.',
-        color: AppColors.accentGold,
-      ),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader('Platform Roadmap', Icons.rocket_launch_rounded),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.primaryNavy, Color(0xFF1A3A5C)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            children: roadmapItems.asMap().entries.map((entry) {
-              final idx = entry.key;
-              final item = entry.value;
-              return Padding(
-                padding: EdgeInsets.only(bottom: idx < roadmapItems.length - 1 ? 16 : 0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: item.color.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: item.color.withValues(alpha: 0.3)),
-                      ),
-                      child: Center(
-                        child: Text(item.emoji, style: const TextStyle(fontSize: 18)),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title,
-                            style: AppTypography.fontHeading(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            item.desc,
-                            style: GoogleFonts.inter(
-                              color: Colors.white54,
-                              fontSize: 11,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: item.color.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'Soon',
-                        style: GoogleFonts.inter(
-                          color: item.color,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const AppMonogramLogo(size: 22, showGlow: false),
+              const SizedBox(width: 8),
+              Text(
+                'NyayaSetu Judicial Learning Platform',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: AppColors.primaryNavy,
                 ),
-              );
-            }).toList(),
+              ),
+            ],
           ),
-        ),
-      ],
+          const SizedBox(height: 6),
+          Text(
+            'NyayaSetu is an independent educational prep platform developed solely for academic and judicial examination studies. It is NOT affiliated with, sponsored by, or endorsed by the Government of India or the Supreme Court of India.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: Colors.grey.shade600,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 12,
+            runSpacing: 6,
+            children: [
+              InkWell(
+                onTap: () => LegalComplianceModal.showGovernmentDisclaimer(context),
+                child: const Text(
+                  'Govt Disclaimer & Sources',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2563EB),
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              const Text('•', style: TextStyle(color: Colors.grey, fontSize: 11)),
+              InkWell(
+                onTap: () => LegalComplianceModal.showPrivacyPolicy(context),
+                child: const Text(
+                  'Privacy Policy',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2563EB),
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+              const Text('•', style: TextStyle(color: Colors.grey, fontSize: 11)),
+              InkWell(
+                onTap: () => LegalComplianceModal.showTermsOfService(context),
+                child: const Text(
+                  'Terms of Service',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2563EB),
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -891,19 +995,5 @@ class _ActionItem {
     required this.subtitle,
     required this.gradient,
     required this.onTap,
-  });
-}
-
-class _RoadmapItem {
-  final String emoji;
-  final String title;
-  final String desc;
-  final Color color;
-
-  const _RoadmapItem({
-    required this.emoji,
-    required this.title,
-    required this.desc,
-    required this.color,
   });
 }
